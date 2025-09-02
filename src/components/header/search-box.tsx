@@ -1,4 +1,4 @@
-import { Dispatch, setStateAction, useState } from "react";
+import { type Dispatch, type SetStateAction, useState } from "react";
 import { Search, Settings2 } from "lucide-react";
 import { type ParamsType } from "../../types.ts";
 import { motion, type TargetAndTransition } from "motion/react";
