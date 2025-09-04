@@ -4,7 +4,7 @@ import { type ParamsType } from "../../types.ts";
 import { motion, type TargetAndTransition } from "motion/react";
 
 interface Props {
-    setSearchFilter: Dispatch<setStateAction<ParamsType>>;
+    setSearchFilter: Dispatch<SetStateAction<ParamsType>>;
 }
 
 const SearchBox = ({ setSearchFilter }: Props) => {

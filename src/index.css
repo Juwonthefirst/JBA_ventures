@@ -17,6 +17,8 @@
     font-weight: 100 900;
     font-style: italic;
 }
+
+
 @theme {
     --color-accent: var(--color-black);
 }

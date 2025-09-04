@@ -12,10 +12,10 @@ const PropertyPage = () => {
     ];
     console.log(id);
     return (
-        <div className="flex flex-col md:flex-row md:gap-4">
+        <div className="flex flex-col md:flex-row md:gap-4 md:items-center">
             <img
                 src={"/test.jpg"}
-                className="h-64 md:h-80 object-cover rounded-b-2xl mb-4"
+                className="h-72 md:h-80 object-cover rounded-b-2xl mb-4 md:w-2/3"
             />
             {
                 <div className="flex flex-col gap-3 p-4 pt-0">
@@ -36,12 +36,17 @@ const PropertyPage = () => {
                         ))}
                     </ul>
                     <div className="mt-4">
-                        <h2 className="text-l font-medium">Description:</h2>
+                        <h2 className="text-lg font-medium">Description:</h2>
                         <p className="leading-relaxed text-sm">
                             gkxgxgxgkxfkfkfk zdgxkxtdt xtoxxtdot xglgxx otxtkzkg
                             todzltxlg xgkxkt cfkmgxg kxktclg lgxktdoy cotxkgxkt
                             xotkxgg kodtoyd oxyxoy
                         </p>
+                        <ul className="list-disc list-inside">
+                            <li>Hello</li>
+                            <li>Hio</li>
+                            <li>juown</li>
+                        </ul>
                     </div>
                 </div>
             }

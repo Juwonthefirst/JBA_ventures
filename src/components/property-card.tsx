@@ -17,7 +17,10 @@ const PropertyCard = ({
     ];
     return (
         <article className="flex flex-col gap-2 transition-all ">
-            <img className="rounded-lg h-72 object-cover w-full hover:scale-110 hover:shadow" src={imgUrl} />
+            <img
+                className="rounded-lg h-72 object-cover w-full hover:scale-110 hover:shadow"
+                src={imgUrl}
+            />
             <Link to={"/" + String(id)} className="flex flex-col gap-2">
                 <h2 className="text-xl font-medium line-clamp-1">{title}</h2>
                 <div className="flex gap-1.5 text-sm items-center opacity-80">
@@ -28,7 +31,7 @@ const PropertyCard = ({
                     {extraInfo.map((info, index) => (
                         <div
                             key={index}
-                            className="flex gap-1 items-center p-1.5 bg-slate-100 rounded-sm ast:border-0 irst:pl-0"
+                            className="flex gap-1 items-center p-2 bg-slate-100 rounded-sm"
                         >
                             <info.Icon size="14" />
                             <p>{info.message}</p>
@@ -40,7 +43,7 @@ const PropertyCard = ({
                 <p className="text-2xl font-medium">₦{price}</p>
                 <button
                     type="button"
-                    className="border-2 px-2 py-1 rounded-xl "
+                    className="border-2 px-2 py-1.5 rounded-xl"
                 >
                     Contact us
                 </button>
