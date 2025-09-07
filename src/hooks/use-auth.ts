@@ -1,90 +1,95 @@
-import { useState, useEffect, useRef } from "react";
+import { useReducer, useEffect, useRef } from "react";
+import { type AuthStateType } from "@/types.ts";
+import authReducer from "@/reducers/authReducer.ts";
 
-interface StateType {
-    authToken: string | null;
-    error: string | null;
-    isFetching: boolean;
-}
-
-interface UseAuthReturnType extends StateType {
+interface UseAuthReturnType extends AuthStateType {
     login: (email: string, password: string) => Promise<void>;
 }
 
+const REFRESH_INTERVAL = 30 * 60 * 1000;
+
 const useAuth = (): UseAuthReturnType => {
-    const [authState, setAuthState] = useState<StateType>({
-        authToken: null,
-        error: null,
-        isFetching: false
+    const [authState, dispatch] = useReducer(authReducer, {
+        authToken: undefined,
+        error: undefined,
+        fetchType: "initial",
+        isAuthenticated: false
     });
-    const csrfToken = useRef("");
-    const refreshIntervalKey = useRef<number | undefined>(undefined);
-    const backendURL = import.meta.env.VITE_BACKEND_URL + "/api/v1/auth/";
+    const csrfTokenRef = useRef("");
+    const backendURL =
+        String(import.meta.env.VITE_BACKEND_URL) + "/api/v1/auth/";
 
     const refreshAccessToken = async (signal: AbortSignal): Promise<void> => {
         const response = await fetch(backendURL + "token/refresh/", {
+            method: "POST",
             signal,
             credentials: "include",
             headers: {
-                "X-CSRFTOKEN": csrfToken.current
+                "X-CSRFTOKEN": csrfTokenRef.current
             }
         });
-        const data = await response.json();
+        const data = (await response.json()) as {
+            access?: string;
+            error?: string;
+        };
         if (!response.ok) throw new Error(data.error || response.statusText);
-        setAuthState({
-            error: null,
-            isFetching: false,
-            authToken: data.access
-        });
+        dispatch({ type: "SET_ACCESS_TOKEN", access: data.access });
     };
 
     const fetchCSRFToken = async (signal: AbortSignal): Promise<void> => {
         const response = await fetch(backendURL + "csrf/", {
             signal
         });
-        const data = await response.json();
+        const data = (await response.json()) as { csrf: string };
         if (!response.ok) throw new Error(response.statusText);
-        csrfToken.current = data.csrf;
+        csrfTokenRef.current = data.csrf;
     };
 
     useEffect(() => {
         const abortController = new AbortController();
         const signal = abortController.signal;
-        setAuthState((currentAuthState) => ({
-            ...currentAuthState,
-            isFetching: true
-        }));
         (async () => {
-            if (!csrfToken.current) await fetchCSRFToken(signal);
+            dispatch({ type: "START_INITIAL_FETCH" });
+            if (!csrfTokenRef.current) await fetchCSRFToken(signal);
             await refreshAccessToken(signal);
-            refreshIntervalKey.current = setInterval(
-                () =>
-                    refreshAccessToken(signal).catch((error) => {
-                        if (error.name !== "AbortError") {
-                            setAuthState({
-                                error: error.message,
-                                isFetching: false,
-                                authToken: null
-                            });
-                        }
-                    }),
-                45 * 60 * 1000
-            );
-        })().catch((error) => {
-            if (error.name !== "AbortError") {
-                setAuthState({
-                    error: error.message,
-                    isFetching: false,
-                    authToken: null
+        })().catch((error: unknown) => {
+            if (error instanceof Error && error.name !== "AbortError") {
+                dispatch({
+                    type: "SET_FETCH_ERROR",
+                    error: error.message
                 });
             }
         });
         return () => {
             abortController.abort();
-            clearInterval(refreshIntervalKey.current);
         };
     }, []);
 
+    useEffect(() => {
+        if (!authState.isAuthenticated) return;
+        alert("refreshing");
+        const abortController = new AbortController();
+        const intervalKey = setInterval(() => {
+            refreshAccessToken(abortController.signal).catch(
+                (error: unknown) => {
+                    if (error instanceof Error && error.name !== "AbortError") {
+                        dispatch({
+                            type: "SET_FETCH_ERROR",
+                            error: error.message
+                        });
+                    }
+                }
+            );
+        }, REFRESH_INTERVAL);
+
+        return () => {
+            clearInterval(intervalKey);
+            abortController.abort();
+        };
+    }, [authState.isAuthenticated]);
+
     const login = async (email: string, password: string) => {
+        dispatch({ type: "START_LOGIN_FETCH" });
         try {
             const response = await fetch(backendURL + "login/", {
                 method: "POST",
@@ -92,19 +97,24 @@ const useAuth = (): UseAuthReturnType => {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password })
             });
-            const data = await response.json();
+            const data = (await response.json()) as {
+                access?: string;
+                error?: string;
+            };
+
             if (!response.ok) throw new Error(data.error);
-            setAuthState({
-                authToken: data.access,
-                isFetching: false,
-                error: null
+            //if (data.access)
+            dispatch({
+                type: "SET_ACCESS_TOKEN",
+                access: data.access
             });
-        } catch (error: any) {
-            setAuthState({
-                authToken: null,
-                isFetching: false,
-                error: error.message
-            });
+        } catch (error) {
+            if (error instanceof Error) {
+                dispatch({
+                    type: "SET_FETCH_ERROR",
+                    error: error.message
+                });
+            }
         }
     };
 

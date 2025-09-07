@@ -1,15 +1,20 @@
-import { type ReactNode } from "react";
+import { type ReactNode, useState } from "react";
 
 interface Props {
-    onSubmit: () => void | Promise<void>;
+    className?: string;
+    onSubmit: () => void;
     children: ReactNode;
 }
 
-const Form = ({ onSubmit, children }: Props) => {
+const Form = ({ className = "", onSubmit, children }: Props) => {
+    const [hasSubmitted, setHasSubmitted] = useState<boolean>(false);
     return (
         <form
-        className="flex flex-col gap-6"
+            noValidate
+            data-submitted={hasSubmitted}
+            className={"flex flex-col gap-6 group " + className}
             onSubmit={(event) => {
+                setHasSubmitted(true);
                 event.preventDefault();
                 onSubmit();
             }}

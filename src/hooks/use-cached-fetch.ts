@@ -11,10 +11,17 @@ interface CacheType<Type> {
     [key: string]: { data: Type; exp: number };
 }
 
+interface FetchInit {
+    headers?: ParamsType;
+    body: { [key: string]: string | number };
+    method: "POST" | "PUT" | "DELETE";
+}
+
 const useCachedFetch = function <Type>(
     url: string,
     params: ParamsType,
-    cacheMinutes = 10
+    init?: FetchInit,
+    cacheMinutes = 5
 ): StateType<Type> {
     const cache = useRef<CacheType<Type>>({});
     const [state, setState] = useState<StateType<Type>>({
@@ -44,27 +51,30 @@ const useCachedFetch = function <Type>(
         const controller = new AbortController();
 
         (async () => {
-            try {
-                const response = await fetch(urlAndParams, {
-                    signal: controller.signal
-                });
-                const data: Type = await response.json();
-                if (!response.ok) throw new Error(response.statusText);
+            const response = await fetch(urlAndParams, {
+                method: init ? init.method : "GET",
+                headers: init? init.headers : undefined,
+                signal: controller.signal,
+                body: init ? JSON.stringify(init.body) : undefined
+            });
+            const data = (await response.json()) as Type;
+            if (!response.ok) throw new Error(response.statusText);
 
-                setState({ data, error: null, isLoading: false });
-                cache.current[urlAndParams] = {
-                    data,
-                    exp: Date.now() + cacheDuration
-                };
-            } catch (e) {
-                if (e instanceof Error && e.name !== "AbortError") {
-                    setState({ data: null, error: e, isLoading: false });
-                }
+            setState({ data, error: null, isLoading: false });
+            cache.current[urlAndParams] = {
+                data,
+                exp: Date.now() + cacheDuration
+            };
+        })().catch((error: unknown) => {
+            if (error instanceof Error && error.name !== "AbortError") {
+                setState({ data: null, error: error, isLoading: false });
             }
-        })();
+        });
 
-        return () => controller.abort();
-    }, [urlAndParams]);
+        return () => {
+            controller.abort();
+        };
+    }, [urlAndParams, cacheDuration]);
 
     return state;
 };
