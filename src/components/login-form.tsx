@@ -4,8 +4,8 @@ import { useState } from "react";
 import { LoaderCircle } from "lucide-react";
 
 interface Prop {
-    fetchType: string | null;
-    error: string | null;
+    fetchType: string | undefined;
+    error: string | undefined;
     login: (email: string, password: string) => void;
 }
 
@@ -17,7 +17,7 @@ const LoginForm = ({ login, error: loginError, fetchType }: Prop) => {
     );
 
     return (
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-6 dark:text-white">
             <div>
                 <h1 className="text-2xl font-medium mb-2">
                     Welcome back, admin
@@ -27,22 +27,23 @@ const LoginForm = ({ login, error: loginError, fetchType }: Prop) => {
 
             <Form
                 onSubmit={() => {
-                    if (!email)
+                    if (!email){
                         setErrors({
                             email: "Please fill in your email"
                         });
-                    return;
-                    if (!password)
+                    return;}
+                    if (!password){
                         setErrors({
                             password: "Please fill in your password"
                         });
-                    return;
+                    return;}
                     login(email, password);
                 }}
             >
                 <InputField
                     label="Email"
                     inputType="email"
+                    required={false}
                     value={email}
                     error={loginError || errors.email}
                     onChange={(event) => {
@@ -52,6 +53,7 @@ const LoginForm = ({ login, error: loginError, fetchType }: Prop) => {
                 <InputField
                     label="Password"
                     inputType="password"
+                    required={false}
                     value={password}
                     error={errors.password}
                     onChange={(event) => {
@@ -59,7 +61,7 @@ const LoginForm = ({ login, error: loginError, fetchType }: Prop) => {
                     }}
                 />
                 <button
-                    className="flex justify-center bg-black text-white text-inherit p-1 text-lg rounded-lg"
+                    className="flex justify-center bg-black text-white text-inherit p-1 text-lg font-medium rounded-lg dark:text-black dark:bg-white"
                     type="submit"
                 >
                     {fetchType === "login" ? (

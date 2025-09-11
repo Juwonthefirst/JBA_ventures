@@ -7,7 +7,7 @@ import CreatePropertyPage from "./pages/admin/create-property-page.tsx";
 
 const router = createBrowserRouter([
     {
-        path: "/admin",
+        path: "/",
         Component: MainPage
     },
     {
@@ -15,12 +15,12 @@ const router = createBrowserRouter([
         Component: PropertyPage
     },
     {
-        path: "/",
+        path: "/admin",
         Component: BaseAdminPage,
         children: [
             { index: true, Component: MainAdminPage },
             { path: "/admin/add", Component: CreatePropertyPage },
-            { path: "/admin/:id", Component: "" }
+            { path: "/admin/:id", Component: CreatePropertyPage }
         ]
     }
 ]);

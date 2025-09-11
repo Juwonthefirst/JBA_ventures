@@ -1,29 +1,28 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { type ParamsType } from "../types.ts";
 
 interface StateType<Type> {
     data: Type | null;
-    error: Error | null;
+    error: string | null;
     isLoading: boolean;
+}
+
+interface ReturnValue<Type> extends StateType<Type> {
+    clearCache: () => void;
 }
 
 interface CacheType<Type> {
     [key: string]: { data: Type; exp: number };
 }
 
-interface FetchInit {
-    headers?: ParamsType;
-    body: { [key: string]: string | number };
-    method: "POST" | "PUT" | "DELETE";
-}
+let globalCache = {};
 
 const useCachedFetch = function <Type>(
     url: string,
-    params: ParamsType,
-    init?: FetchInit,
+    params?: ParamsType,
     cacheMinutes = 5
-): StateType<Type> {
-    const cache = useRef<CacheType<Type>>({});
+): ReturnValue<Type> {
+    const cache: CacheType<Type> = globalCache;
     const [state, setState] = useState<StateType<Type>>({
         data: null,
         error: null,
@@ -37,13 +36,14 @@ const useCachedFetch = function <Type>(
     const cacheDuration = cacheMinutes * 60 * 1000;
 
     useEffect(() => {
-        const cachedResponse = cache.current[urlAndParams];
+        const cachedResponse = cache[urlAndParams];
         if (cachedResponse && cachedResponse.exp > Date.now()) {
             setState({
                 data: cachedResponse.data,
                 error: null,
                 isLoading: false
             });
+            alert("using cache");
             return;
         }
 
@@ -52,22 +52,24 @@ const useCachedFetch = function <Type>(
 
         (async () => {
             const response = await fetch(urlAndParams, {
-                method: init ? init.method : "GET",
-                headers: init? init.headers : undefined,
-                signal: controller.signal,
-                body: init ? JSON.stringify(init.body) : undefined
+                signal: controller.signal
             });
             const data = (await response.json()) as Type;
             if (!response.ok) throw new Error(response.statusText);
 
             setState({ data, error: null, isLoading: false });
-            cache.current[urlAndParams] = {
+
+            cache[urlAndParams] = {
                 data,
                 exp: Date.now() + cacheDuration
             };
         })().catch((error: unknown) => {
             if (error instanceof Error && error.name !== "AbortError") {
-                setState({ data: null, error: error, isLoading: false });
+                setState({
+                    data: null,
+                    error: error.message,
+                    isLoading: false
+                });
             }
         });
 
@@ -76,7 +78,12 @@ const useCachedFetch = function <Type>(
         };
     }, [urlAndParams, cacheDuration]);
 
-    return state;
+    return {
+        ...state,
+        clearCache: () => {
+            globalCache = {};
+        }
+    };
 };
 
 export default useCachedFetch;

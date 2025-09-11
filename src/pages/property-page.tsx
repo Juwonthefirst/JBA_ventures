@@ -1,48 +1,44 @@
 import { useParams } from "react-router";
-import { useState, useEffect } from "react";
 import { MapPin } from "lucide-react";
 import TagList from "@/components/tag-list.tsx";
 import Skeleton from "@/components/property-page-skeleton.tsx";
+import useCachedFetch from "@/hooks/use-cached-fetch.ts";
+import { type Property } from "@/types.ts";
+
+const backendURL = String(import.meta.env.VITE_BACKEND_URL);
 
 const PropertyPage = () => {
     const { id } = useParams();
-    const [loaded, setLoaded] = useState(false);
+    const { isLoading, error, data } = useCachedFetch<Property>(
+        `${backendURL}/api/v1/property/${id}`
+    );
 
-    useEffect(() => {
-        const timeoutKey = setTimeout(() => {
-            setLoaded(true);
-        }, 3000);
-        return () => {
-            clearTimeout(timeoutKey);
-        };
-    }, []);
-
-    if (!loaded) {
+    if (isLoading) {
         return <Skeleton />;
     }
+    if (error|| !data) return <p>{error}</p>;
+
     return (
         <div className="flex flex-col md:flex-row md:gap-4 md:items-center dark:text-white">
             <img
-                src={"/test.jpg"}
+                src={data.main_image}
                 className="h-72 md:h-80 object-cover rounded-b-xl mb-4 md:w-2/3"
             />
             {
                 <div className="flex flex-col gap-3 p-4 pt-0">
-                    <h2 className="text-2xl ">₦6,000,000</h2>
+                    <h2 className="text-2xl ">₦{data.price}</h2>
                     <div className="flex gap-1 text-sm items-center opacity-80">
                         <MapPin size="16" className="min-h-4 min-w-4" />
-                        <p>4 Adefenwa Street, Itamaga, Ikorodu, Lagos,</p>
+                        <p>{`${data.address}, ${data.lga}, ${data.state}`}</p>
                     </div>
-                    <TagList />
+                    <TagList tags={data.tags}/>
                     <div className="mt-4">
                         <h2 className="text-lg font-medium">Description:</h2>
                         <p className="leading-relaxed text-sm">
-                            gkxgxgxgkxfkfkfk zdgxkxtdt xtoxxtdot xglgxx otxtkzkg
-                            todzltxlg xgkxkt cfkmgxg kxktclg lgxktdoy cotxkgxkt
-                            xotkxgg kodtoyd oxyxoy
+                            {data.description}
                         </p>
                         <h2 className="text-lg mt-6 font-medium">
-                            This property includes:{" "}
+                            This property includes:
                         </h2>
                         <ul className="list-disc list-inside text-sm space-y-1 p-2">
                             <li>24 hours electricity</li>

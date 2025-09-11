@@ -17,6 +17,7 @@ const authReducer = (
     switch (action.type) {
         case "SET_ACCESS_TOKEN":
             return {
+                
                 fetchType: undefined,
                 isAuthenticated: true,
                 error: undefined,

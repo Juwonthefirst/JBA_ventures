@@ -1,0 +1,100 @@
+import { useState, useEffect, type RefObject, type ChangeEvent } from "react";
+
+import InputField from "@/components/form/input-field.tsx";
+import SelectField from "@/components/form/select-input.tsx";
+import Title from "@/components/form/title.tsx";
+import Icon from "@/components/icon-map.tsx";
+import { type TagType } from '@/types.ts'
+
+
+interface TagProp extends TagType {
+    onDelete: () => void;
+}
+
+const Tag = ({ type, text, onDelete }: TagProp) => {
+    return (
+        <div className="inline-flex gap-1 items-center p-2 bg-slate-100 rounded-sm dark:bg-zinc-800 text-xs w-fit mr-2 mb-2">
+            <Icon type={type} size="14" />
+            <p>{text}</p>
+            <button type="button" onClick={onDelete} className="ml-1 ">
+                x
+            </button>
+        </div>
+    );
+};
+
+interface TagInputFieldProps {
+    ref?: RefObject<TagType[]>;
+    onChange?: (newValue: TagType[]) => void;
+}
+
+const TagInputField = ({ ref, onChange }: TagInputFieldProps) => {
+    const [selectedTags, setSelectedTags] = useState<TagType[]>([]);
+    const [unFinishedTag, setUnFinishedTag] = useState<TagType>({
+        type: "",
+        text: ""
+    });
+    useEffect(() => {
+        onChange?.(selectedTags);
+        if (ref) ref.current = selectedTags;
+    }, [selectedTags]);
+
+    const handleDelete = (removedTagIndex: number) => {
+        setSelectedTags(
+            selectedTags.filter((_, index) => removedTagIndex !== index)
+        );
+    };
+
+    const handleAdd = () => {
+        if (!unFinishedTag.type) return;
+        setSelectedTags([...selectedTags, unFinishedTag]);
+        setUnFinishedTag({ type: "", text: "" });
+    };
+
+    const handleTypeChange = (newValue: string) => {
+        setUnFinishedTag({ ...unFinishedTag, type: newValue });
+    };
+
+    const handleTextChange = (event: ChangeEvent<HTMLInputElement>) => {
+        setUnFinishedTag({ ...unFinishedTag, text: event.target.value });
+    };
+
+    return (
+        <div>
+            <Title>Tags</Title>
+            <div className="flex flex-col gap-4 w-full mb-4">
+                <SelectField
+                    label="Tag"
+                    placeholder="Pick a tag"
+                    options={["size", "bed", "bath", "pool"]}
+                    onChange={handleTypeChange}
+                    value={unFinishedTag.type}
+                />
+                <InputField
+                    placeholder="enter tag text"
+                    required={false}
+                    value={unFinishedTag.text}
+                    onChange={handleTextChange}
+                />
+                <button
+                    type="button"
+                    onClick={handleAdd}
+                    className="px-2 py-1 rounded-sm bg-black text-white dark:bg-white dark:text-black self-end"
+                >
+                    Add +
+                </button>
+            </div>
+            <div className="h-40 p-2 border dark:border-white rounded-lg">
+                {selectedTags.map((tagInfo, index) => (
+                    <Tag
+                        key={index}
+                        {...tagInfo}
+                        onDelete={() => {handleDelete(index)}}
+                    />
+                ))}
+            </div>
+        </div>
+    );
+};
+
+export default TagInputField;

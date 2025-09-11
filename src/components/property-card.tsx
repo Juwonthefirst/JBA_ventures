@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import { MapPin, BedDouble, Bath, Ruler } from "lucide-react";
+import { MapPin } from "lucide-react";
 import { type BaseProperty } from "@/types.ts";
 import { Skeleton } from "@/components/ui/skeleton.tsx";
 import TagList, { TagListSkeleton } from "@/components/tag-list.tsx";
@@ -17,10 +17,12 @@ export const PropertySkeleton = () => {
 };
 
 const PropertyCard = ({
-    imgUrl,
+    main_image,
     price,
     id,
-    title,
+    offer,
+    tags,
+    description,
     state,
     lga
 }: BaseProperty) => {
@@ -28,15 +30,17 @@ const PropertyCard = ({
         <article className="flex flex-col gap-2 transition-all dark:text-white">
             <img
                 className="rounded-lg h-72 object-cover w-full hover:scale-110 hover:shadow"
-                src={imgUrl}
+                src={main_image}
             />
             <Link to={"/" + String(id)} className="flex flex-col gap-2">
-                <h2 className="text-xl font-medium line-clamp-1">{title}</h2>
+                <h2 className="text-xl font-medium line-clamp-1">
+                    {description}
+                </h2>
                 <div className="flex gap-1.5 text-sm items-center opacity-80">
                     <MapPin size="14" />
                     <p>{lga + ", " + state}</p>
                 </div>
-                <TagList />
+                <TagList tags={tags} />
             </Link>
             <div className="flex justify-between items-center text-⁰ mt-4">
                 <p className="text-2xl font-medium ">₦{price}</p>

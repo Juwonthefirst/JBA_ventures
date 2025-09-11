@@ -1,4 +1,4 @@
-import { type ReactNode, useState } from "react";
+import { type ReactNode } from "react";
 
 interface Props {
     className?: string;
@@ -6,15 +6,13 @@ interface Props {
     children: ReactNode;
 }
 
+//Todo add automatic sending to backend just like RHF form with the the data being sent the return value of onSubmit
 const Form = ({ className = "", onSubmit, children }: Props) => {
-    const [hasSubmitted, setHasSubmitted] = useState<boolean>(false);
     return (
         <form
             noValidate
-            data-submitted={hasSubmitted}
             className={"flex flex-col gap-6 group " + className}
             onSubmit={(event) => {
-                setHasSubmitted(true);
                 event.preventDefault();
                 onSubmit();
             }}

@@ -1,41 +1,30 @@
 import { Skeleton } from "@/components/ui/skeleton.tsx";
-import { MapPin, BedDouble, Bath, Ruler } from "lucide-react";
-
-interface TagType {
-    Icon: any;
-    message: string;
-}
-
-interface Props {
-    tags?: TagType[];
-}
-
-const tagsList = [
-    { Icon: BedDouble, message: "3 Bed" },
-    { Icon: Bath, message: "2 Bath" },
-    { Icon: Ruler, message: "300 km²" }
-];
+import Icon from "@/components/icon-map.tsx";
 
 export const TagListSkeleton = () => {
     return (
         <ul className="flex gap-2">
-            {[1, 2, 3].map((element, index) => (
+            {[1, 2, 3].map((element) => (
                 <Skeleton key={element} className="w-1/5 h-7" />
             ))}
         </ul>
     );
 };
 
-const TagList = ({ tags = tagsList }: Props) => {
+interface Props {
+    tags: {[key: string]: string};
+}
+
+const TagList = ({ tags }: Props) => {
     return (
         <ul className="flex text-xs gap-2">
-            {tags.map((tag, index) => (
+            {Object.keys(tags).map((tagType) => (
                 <li
-                    key={index}
+                    key={tagType}
                     className="flex gap-1 items-center p-2 bg-slate-100 rounded-sm dark:bg-zinc-800"
                 >
-                    <tag.Icon size="14" />
-                    <p>{tag.message}</p>
+                    <Icon type={tagType} size="14" />
+                    <p>{tags[tagType]}</p>
                 </li>
             ))}
         </ul>

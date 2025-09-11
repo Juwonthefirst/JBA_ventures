@@ -1,42 +1,48 @@
-import { useState, useEffect } from "react";
+import { useState, useRef } from "react";
 import PropertyCard, { PropertySkeleton } from "@/components/property-card.tsx";
 import Header from "@/components/header/header.tsx";
-import { type ParamsType } from "@/types.ts";
+import type {
+    ParamsType,
+    BaseProperty,
+    PaginatedBasePropertyResponse
+} from "@/types.ts";
+import useCachedFetch from "@/hooks/use-cached-fetch.ts";
+import Popup from "../components/admin/delete-confirmation-popup.tsx";
+
+const backendURL = import.meta.env.VITE_BACKEND_URL<string>;
 
 const MainPage = () => {
     const [searchFilter, setSearchFilter] = useState<ParamsType>({});
-    const [loaded, setloaded] = useState(true);
+    const { data, error, isLoading } =
+        useCachedFetch<PaginatedBasePropertyResponse>(
+            backendURL + "/api/v1/property/",
+            searchFilter
+        );
 
-    useEffect(() => {
-        const timeoutId = setTimeout(() => {
-            setloaded(true);
-        }, 5000);
-        return () => {
-            clearTimeout(timeoutId);
-        };
-    }, []);
-
+    const fetchedDataRef = useRef<{ [key: string]: BaseProperty }>({});
+    if (data) {
+        data.results.forEach((property) => {
+            const key = property.state + String(property.id);
+            fetchedDataRef.current[key] = property;
+        });
+    }
+    if (error)
+        return (
+<p>Hello</p>
+        );
     return (
         <>
             <Header setSearchFilter={setSearchFilter} />
             <main className="flex flex-col p-4 py-16 gap-20 md:grid md:grid-cols-2 lg:grid-cols-3 gap-x-10">
-                {[1, 2, 3, 4, 5, 6].map((element, index) =>
-                    loaded ? (
-                        <PropertyCard
-                            key={element}
-                            imgUrl={"/test.jpg"}
-                            title={
-                                "3 Bedroom flat with boys quarters and a fully furnished toilet"
-                            }
-                            state={"Lagos"}
-                            lga={"Ikorodu"}
-                            price={6000}
-                            id={element}
-                        />
-                    ) : (
-                        <PropertySkeleton />
-                    )
-                )}
+                {isLoading
+                    ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map((element) => (
+                          <PropertySkeleton key={element} />
+                      ))
+                    : Object.values(fetchedDataRef.current).map(
+                          (property: BaseProperty) => (
+                              <PropertyCard key={property.id} {...property} />
+                          )
+                      )}
             </main>
         </>
     );
