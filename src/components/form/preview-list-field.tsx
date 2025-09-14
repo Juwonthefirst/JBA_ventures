@@ -1,32 +1,28 @@
-import { useState, useEffect, type RefObject } from "react";
+import { useState } from "react";
 
 import InputField from "@/components/form/input-field.tsx";
 
 interface Props {
-    ref?: RefObject<string[]>;
-    onChange: (newList: string[]) => void;
+    value: string[];
+    onChange?: (newList: string[]) => void;
 }
 
-const PreviewList = ({ ref, onChange }: Props) => {
-    const [benefitsList, setBenefitsList] = useState<string[]>([]);
+const PreviewList = ({ onChange, value = [] }: Props) => {
     const [inputValue, setInputValue] = useState("");
-    if (ref) ref.current = benefitsList;
-
-    useEffect(() => {onChange?.(benefitsList);}, [benefitsList]);
 
     const handleAdd = () => {
-        const newBenefit = inputValue.trim();
-        if (!newBenefit) return;
-        setBenefitsList([...benefitsList, newBenefit]);
+        const newValue = inputValue.trim();
+        if (!newValue) return;
+        const updatedList = [...value, newValue];
         setInputValue("");
+        onChange?.(updatedList);
     };
 
-    const handleRemove = (removedBenefitIndex: number) => {
-        setBenefitsList(
-            benefitsList.filter(
-                (_, index) => index !== removedBenefitIndex
-            )
+    const handleRemove = (removedItemIndex: number) => {
+        const updatedList = value.filter(
+            (_, index) => index !== removedItemIndex
         );
+        onChange?.(updatedList);
     };
 
     return (
@@ -46,19 +42,22 @@ const PreviewList = ({ ref, onChange }: Props) => {
                 Add +
             </button>
             <ul className="mt-6 h-32 w-full border dark:border-white rounded-lg list-disc list-inside text-sm p-2 overflow-y-auto">
-                {benefitsList.map((benefit, index) => (
-                    <div className="flex justify-between items-center p-1">
-                        <li key={index} className="truncate">
-                            {benefit}
-                        </li>
+                {value.map((item, index) => (
+                    <li
+                        key={item + String(index)}
+                        className="flex justify-between items-center p-1"
+                    >
+                        {item}
                         <button
                             type="button"
-                            onClick={() => handleRemove(index)}
+                            onClick={() => {
+                                handleRemove(index);
+                            }}
                             className="text-xs font-medium bg-white/20 p-1 rounded-full"
                         >
                             X
                         </button>
-                    </div>
+                    </li>
                 ))}
                 <li className="p-1 truncate">{inputValue}</li>
             </ul>

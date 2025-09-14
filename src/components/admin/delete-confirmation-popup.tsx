@@ -7,7 +7,8 @@ import {
     AlertDialogAction,
     AlertDialogCancel,
     AlertDialogDescription,
-    AlertDialogTitle
+    AlertDialogHeader,
+    AlertDialogTitle,
 } from "@/components/ui/alert-dialog.tsx";
 
 interface Props {
@@ -21,7 +22,9 @@ const DeleteConfirmationPopup = ({ onConfirm, children, className }: Props) => {
         <AlertDialog>
             <AlertDialogTrigger className={className}>{children}</AlertDialogTrigger>
             <AlertDialogContent className="w-3/4 text-white bg-black p-4 rounded-xl">
-                <AlertDialogTitle>Delete Property</AlertDialogTitle>
+                <AlertDialogHeader>
+                                <AlertDialogTitle>Delete Property</AlertDialogTitle>
+                </AlertDialogHeader>
                 <AlertDialogDescription className="opacity-70 mt-[-4px]">
                     Are you sure you want to delete this property
                 </AlertDialogDescription>

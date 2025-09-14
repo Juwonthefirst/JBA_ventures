@@ -7,16 +7,16 @@ export interface BaseProperty {
     description: string;
     state: string;
     lga: string;
-    price: string;
-    offer: string;
-    tags: { [key: string]: string };
+    price: number;
+    offer: "Sale" | "Lease" | "Rent";
+    tags: string;
     id: number;
 }
 
 export interface Property extends BaseProperty {
     address: string;
     benefits: string[];
-    type: string;
+    type: "House" | "Shop" | "Land";
     extra_media: string[];
 }
 
@@ -35,10 +35,31 @@ export interface AuthStateType {
 }
 
 export interface TagType {
-    type: string;
-    text: string;
+    [key: string]: string;
 }
 
 export type AdminContext = {
     authToken: string;
 };
+
+export interface PropertyFormInputs {
+    main_image: File;
+    extra_media: File[];
+    description: string;
+    benefits: string[];
+    address: string;
+    state: string;
+    lga: string;
+    tags: TagType;
+    price: number;
+    type: "House" | "Shop" | "Land";
+    offer: "Sale" | "Lease" | "Rent";
+}
+
+export type FormDataValues =
+    | string
+    | Blob
+    | Blob[]
+    | string[]
+    | number
+    | number[];

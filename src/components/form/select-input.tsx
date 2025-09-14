@@ -24,7 +24,6 @@ const SelectInput = ({
     options,
     required = true,
     onChange,
-
     error
 }: Props) => {
     return (

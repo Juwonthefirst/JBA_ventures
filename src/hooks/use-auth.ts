@@ -1,4 +1,4 @@
-import { useReducer, useEffect, useRef } from "react";
+import { useReducer, useEffect, useRef, useCallback } from "react";
 import { type AuthStateType } from "@/types.ts";
 import authReducer from "@/reducers/authReducer.ts";
 
@@ -19,31 +19,38 @@ const useAuth = (): UseAuthReturnType => {
     const backendURL =
         String(import.meta.env.VITE_BACKEND_URL) + "/api/v1/auth/";
 
-    const refreshAccessToken = async (signal: AbortSignal): Promise<void> => {
-        const response = await fetch(backendURL + "token/refresh/", {
-            method: "POST",
-            signal,
-            credentials: "include",
-            headers: {
-                "X-CSRFTOKEN": csrfTokenRef.current
-            }
-        });
-        const data = (await response.json()) as {
-            access?: string;
-            error?: string;
-        };
-        if (!response.ok) throw new Error(data.error || response.statusText);
-        dispatch({ type: "SET_ACCESS_TOKEN", access: data.access });
-    };
+    const refreshAccessToken = useCallback(
+        async (signal: AbortSignal): Promise<void> => {
+            const response = await fetch(backendURL + "token/refresh/", {
+                method: "POST",
+                signal,
+                credentials: "include",
+                headers: {
+                    "X-CSRFTOKEN": csrfTokenRef.current
+                }
+            });
+            const data = (await response.json()) as {
+                access?: string;
+                error?: string;
+            };
+            if (!response.ok)
+                throw new Error(data.error || response.statusText);
+            dispatch({ type: "SET_ACCESS_TOKEN", access: data.access });
+        },
+        [backendURL]
+    );
 
-    const fetchCSRFToken = async (signal: AbortSignal): Promise<void> => {
-        const response = await fetch(backendURL + "csrf/", {
-            signal
-        });
-        const data = (await response.json()) as { csrf: string };
-        if (!response.ok) throw new Error(response.statusText);
-        csrfTokenRef.current = data.csrf;
-    };
+    const fetchCSRFToken = useCallback(
+        async (signal: AbortSignal): Promise<void> => {
+            const response = await fetch(backendURL + "csrf/", {
+                signal
+            });
+            const data = (await response.json()) as { csrf: string };
+            if (!response.ok) throw new Error(response.statusText);
+            csrfTokenRef.current = data.csrf;
+        },
+        [backendURL]
+    );
 
     useEffect(() => {
         const abortController = new AbortController();
@@ -63,7 +70,7 @@ const useAuth = (): UseAuthReturnType => {
         return () => {
             abortController.abort();
         };
-    }, []);
+    }, [fetchCSRFToken, refreshAccessToken]);
 
     useEffect(() => {
         if (!authState.isAuthenticated) return;
@@ -86,7 +93,7 @@ const useAuth = (): UseAuthReturnType => {
             clearInterval(intervalKey);
             abortController.abort();
         };
-    }, [authState.isAuthenticated]);
+    }, [authState.isAuthenticated, refreshAccessToken]);
 
     const login = async (email: string, password: string) => {
         dispatch({ type: "START_LOGIN_FETCH" });

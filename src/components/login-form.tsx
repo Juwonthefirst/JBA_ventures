@@ -2,6 +2,7 @@ import InputField from "./form/input-field.tsx";
 import Form from "./form/form.tsx";
 import { useState } from "react";
 import { LoaderCircle } from "lucide-react";
+import Popup from "@/components/popup.tsx";
 
 interface Prop {
     fetchType: string | undefined;
@@ -18,6 +19,7 @@ const LoginForm = ({ login, error: loginError, fetchType }: Prop) => {
 
     return (
         <div className="flex flex-col gap-6 dark:text-white">
+            {/*<Popup open={Boolean(loginError)}>{loginError}</Popup>*/}
             <div>
                 <h1 className="text-2xl font-medium mb-2">
                     Welcome back, admin
@@ -27,17 +29,14 @@ const LoginForm = ({ login, error: loginError, fetchType }: Prop) => {
 
             <Form
                 onSubmit={() => {
-                    if (!email){
-                        setErrors({
-                            email: "Please fill in your email"
-                        });
-                    return;}
-                    if (!password){
-                        setErrors({
-                            password: "Please fill in your password"
-                        });
-                    return;}
-                    login(email, password);
+                    setErrors({
+                        email: email ? undefined : "Please fill in your email",
+                        password: password
+                            ? undefined
+                            : "Please fill in your email"
+                    });
+
+                    if (email && password) login(email, password);
                 }}
             >
                 <InputField
@@ -45,7 +44,7 @@ const LoginForm = ({ login, error: loginError, fetchType }: Prop) => {
                     inputType="email"
                     required={false}
                     value={email}
-                    error={loginError || errors.email}
+                    error={errors.email}
                     onChange={(event) => {
                         setEmail(event.target.value);
                     }}

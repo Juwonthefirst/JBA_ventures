@@ -1,14 +1,15 @@
 import { useState, useEffect } from "react";
 import { type ParamsType } from "../types.ts";
+import { fetchJSON } from "@/helper.ts";
 
 interface StateType<Type> {
     data: Type | null;
-    error: string | null;
+    error: { status: number; message: string } | null;
     isLoading: boolean;
 }
 
-interface ReturnValue<Type> extends StateType<Type> {
-    clearCache: () => void;
+interface ReturnType<Type> extends StateType<Type> {
+    retry: () => void;
 }
 
 interface CacheType<Type> {
@@ -16,13 +17,17 @@ interface CacheType<Type> {
 }
 
 let globalCache = {};
+export const clearCache = () => {
+    globalCache = {};
+};
 
 const useCachedFetch = function <Type>(
     url: string,
     params?: ParamsType,
     cacheMinutes = 5
-): ReturnValue<Type> {
+): ReturnType<Type> {
     const cache: CacheType<Type> = globalCache;
+    const [retryCount, setRetryCount] = useState(0);
     const [state, setState] = useState<StateType<Type>>({
         data: null,
         error: null,
@@ -49,41 +54,38 @@ const useCachedFetch = function <Type>(
 
         setState((state) => ({ ...state, isLoading: true }));
         const controller = new AbortController();
+        fetchJSON<Type>({
+            url: urlAndParams,
+            extraInit: { signal: controller.signal },
+            onSuccess: (data) => {
+                setState({ data, error: null, isLoading: false });
 
-        (async () => {
-            const response = await fetch(urlAndParams, {
-                signal: controller.signal
-            });
-            const data = (await response.json()) as Type;
-            if (!response.ok) throw new Error(response.statusText);
-
-            setState({ data, error: null, isLoading: false });
-
-            cache[urlAndParams] = {
-                data,
-                exp: Date.now() + cacheDuration
-            };
-        })().catch((error: unknown) => {
-            if (error instanceof Error && error.name !== "AbortError") {
+                cache[urlAndParams] = {
+                    data,
+                    exp: Date.now() + cacheDuration
+                };
+            },
+            onError: (status, error) => {
                 setState({
                     data: null,
-                    error: error.message,
+                    error: { status, message: error },
                     isLoading: false
                 });
             }
+        }).catch((error: unknown) => {
+            console.error(error);
         });
 
         return () => {
             controller.abort();
         };
-    }, [urlAndParams, cacheDuration]);
+    }, [urlAndParams, cacheDuration, cache, retryCount]);
 
-    return {
-        ...state,
-        clearCache: () => {
-            globalCache = {};
-        }
+    const retry = () => {
+        setRetryCount((retryCount) => retryCount + 1);
     };
+
+    return {...state, retry};
 };
 
 export default useCachedFetch;

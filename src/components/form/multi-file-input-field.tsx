@@ -1,58 +1,59 @@
-import { useState, useEffect, type RefObject } from "react";
 import { UploadIcon } from "lucide-react";
-
+import { motion } from "motion/react";
 import FileField from "@/components/form/file-input-field.tsx";
 
 interface Props {
-    ref?: RefObject<File[]>;
     maxSize: number;
+    value: File[];
     onChange?: (newValues: File[]) => void;
 }
 
-const MultiFileField = ({ ref, maxSize, onChange }: Props) => {
-    const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-
-    useEffect(() => {
-        onChange?.(selectedFiles);
-        if (ref) ref.current = selectedFiles;
-    }, [selectedFiles]);
-
-    
-
+const MultiFileField = ({ maxSize, onChange, value = [] }: Props) => {
     const MAX_FILE_NUMBER = 9;
     const handleExtraFileUpload = (acceptedFiles: File[]) => {
-        setSelectedFiles(
-            [...selectedFiles, ...acceptedFiles].slice(0, MAX_FILE_NUMBER)
+        const updatedSelectedFiles = [...value, ...acceptedFiles].slice(
+            0,
+            MAX_FILE_NUMBER
         );
+        onChange?.(updatedSelectedFiles);
     };
 
-    const handleRemoveExtraFile = (removedFile: File) => {
-        const updatedSelectedFiles = selectedFiles.filter(
-            (file) => file !== removedFile
+    const handleRemoveExtraFile = (removedFileIndex: number) => {
+        const updatedSelectedFiles = value.filter(
+            (_, index) => index !== removedFileIndex
         );
-        setSelectedFiles(updatedSelectedFiles);
+        onChange?.(updatedSelectedFiles);
     };
 
     return (
         <div>
-            <div className="flex gap-4 border border-black dark:border-white rounded-lg h-36 mb-4 p-3 overflow-x-auto">
-                {selectedFiles.map((file) => {
-                    const MediaTag = file.type.startsWith("image/")
+            <motion.div
+                layout
+                className="flex gap-4 border border-black dark:border-white rounded-lg h-36 mb-4 p-3 overflow-x-auto"
+            >
+                {value?.map((file, index) => {
+                    const key = file.name;
+                    const mediaSRC = URL.createObjectURL(file);
+                    const MediaTag = file.type?.startsWith("image/")
                         ? "img"
                         : "video";
+                        
                     return (
                         <div
-                            key={file.name}
+                            key={key}
                             className="relative h-full w-24 shrink-0"
                         >
                             <MediaTag
                                 className="absolute top-0 left-0 h-full w-full object-cover"
-                                src={URL.createObjectURL(file)}
+                                src={mediaSRC}
                                 controls
                                 playsInline
                             />
                             <button
-                                onClick={() => handleRemoveExtraFile(file)}
+                                type="button"
+                                onClick={() => {
+                                    handleRemoveExtraFile(index);
+                                }}
                                 className="absolute top-0 right-0 bg-black text-white dark:bg-white dark:text-black rounded-full p-1 text-xs font-medium"
                             >
                                 X
@@ -60,11 +61,11 @@ const MultiFileField = ({ ref, maxSize, onChange }: Props) => {
                         </div>
                     );
                 })}
-            </div>
+            </motion.div>
             <FileField
                 maxSize={maxSize}
                 maxFiles={MAX_FILE_NUMBER}
-                disabled={selectedFiles.length >= MAX_FILE_NUMBER}
+                disabled={value.length >= MAX_FILE_NUMBER}
                 onUpload={handleExtraFileUpload}
                 showPreview={false}
                 accept={{ "image/*": [], "video/*": [] }}

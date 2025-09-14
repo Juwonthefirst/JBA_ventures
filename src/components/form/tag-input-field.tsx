@@ -1,13 +1,14 @@
-import { useState, useEffect, type RefObject, type ChangeEvent } from "react";
+import { useState, type ChangeEvent } from "react";
 
 import InputField from "@/components/form/input-field.tsx";
 import SelectField from "@/components/form/select-input.tsx";
 import Title from "@/components/form/title.tsx";
 import Icon from "@/components/icon-map.tsx";
-import { type TagType } from '@/types.ts'
+import { type TagType } from "@/types.ts";
 
-
-interface TagProp extends TagType {
+interface TagProp {
+    type: string;
+    text: string;
     onDelete: () => void;
 }
 
@@ -24,31 +25,32 @@ const Tag = ({ type, text, onDelete }: TagProp) => {
 };
 
 interface TagInputFieldProps {
-    ref?: RefObject<TagType[]>;
-    onChange?: (newValue: TagType[]) => void;
+    value: TagType;
+    onChange?: (newValue: TagType) => void;
 }
 
-const TagInputField = ({ ref, onChange }: TagInputFieldProps) => {
-    const [selectedTags, setSelectedTags] = useState<TagType[]>([]);
-    const [unFinishedTag, setUnFinishedTag] = useState<TagType>({
-        type: "",
-        text: ""
-    });
-    useEffect(() => {
-        onChange?.(selectedTags);
-        if (ref) ref.current = selectedTags;
-    }, [selectedTags]);
+const TagInputField = ({ onChange, value = {} }: TagInputFieldProps) => {
+    const [unFinishedTag, setUnFinishedTag] = useState<{
+        type: string;
+        text: string;
+    }>({ type: "", text: "" });
 
-    const handleDelete = (removedTagIndex: number) => {
-        setSelectedTags(
-            selectedTags.filter((_, index) => removedTagIndex !== index)
-        );
+    const handleDelete = (removedTag: string) => {
+        const updatedSelectedTag = { ...value };
+        delete updatedSelectedTag[removedTag];
+        onChange?.(updatedSelectedTag);
     };
 
     const handleAdd = () => {
         if (!unFinishedTag.type) return;
-        setSelectedTags([...selectedTags, unFinishedTag]);
+        const updatedSelectedTag = {
+            ...value,
+            [unFinishedTag.type]: unFinishedTag.text
+        };
+        onChange?.(updatedSelectedTag);
         setUnFinishedTag({ type: "", text: "" });
+
+        
     };
 
     const handleTypeChange = (newValue: string) => {
@@ -85,11 +87,14 @@ const TagInputField = ({ ref, onChange }: TagInputFieldProps) => {
                 </button>
             </div>
             <div className="h-40 p-2 border dark:border-white rounded-lg">
-                {selectedTags.map((tagInfo, index) => (
+                {Object.entries(value).map(([type, text]) => (
                     <Tag
-                        key={index}
-                        {...tagInfo}
-                        onDelete={() => {handleDelete(index)}}
+                        key={type}
+                        type={type}
+                        text={text}
+                        onDelete={() => {
+                            handleDelete(type);
+                        }}
                     />
                 ))}
             </div>

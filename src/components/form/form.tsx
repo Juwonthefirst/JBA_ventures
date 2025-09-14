@@ -1,20 +1,60 @@
 import { type ReactNode } from "react";
+import { objectToFormData, fetchData } from "@/helper.ts";
 
 interface Props {
+    url?: string;
+    method?: "POST" | "PATCH" | "PUT";
+    headers?: Record<string, string>;
+    extraInit?: RequestInit;
+    encType?: "application/json" | "multipart/form-data";
     className?: string;
-    onSubmit: () => void;
+    onSubmit: () => (void | object | Promise<void | object>);
+    onSuccess?: (response: Response) => void;
+    onError?: (response: Response | string) => void;
     children: ReactNode;
 }
 
-//Todo add automatic sending to backend just like RHF form with the the data being sent the return value of onSubmit
-const Form = ({ className = "", onSubmit, children }: Props) => {
+const Form = ({
+    url,
+    method = "POST",
+    headers,
+    extraInit,
+    encType = "application/json",
+    className = "",
+    onSubmit,
+    onSuccess,
+    onError,
+    children
+}: Props) => {
+    if (!headers) headers = {};
+    if (!extraInit) extraInit = {};
+
     return (
         <form
             noValidate
             className={"flex flex-col gap-6 group " + className}
-            onSubmit={(event) => {
+            onSubmit={async (event) => {
                 event.preventDefault();
-                onSubmit();
+                const returnValue = await onSubmit();
+                if (!returnValue || !url) return;
+
+                const body =
+                    encType === "multipart/form-data"
+                        ? objectToFormData({ data: returnValue })
+                        : JSON.stringify(returnValue);
+
+                if (encType === "application/json")
+                    headers["Content-Type"] = "application/json";
+
+                await fetchData({
+                    url,
+                    headers,
+                    body,
+                    extraInit,
+                    method,
+                    onSuccess,
+                    onError
+                });
             }}
         >
             {children}

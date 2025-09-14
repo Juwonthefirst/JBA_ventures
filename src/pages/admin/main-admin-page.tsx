@@ -2,11 +2,13 @@ import { Link, useOutletContext } from "react-router";
 import { useState, useRef } from "react";
 import { motion } from "motion/react";
 
+import ErrorCard from "@/components/error-card.tsx";
 import SearchBox from "@/components/header/search-box.tsx";
 import PropertyCard, {
     PropertySkeleton
 } from "@/components/admin/admin-property-card.tsx";
-import useCachedFetch from "@/hooks/use-cached-fetch.ts";
+import useCachedFetch, { clearCache } from "@/hooks/use-cached-fetch.ts";
+
 import type {
     ParamsType,
     PaginatedBasePropertyResponse,
@@ -15,13 +17,12 @@ import type {
 } from "@/types.ts";
 import { fetchJSON } from "@/helper.ts";
 
-const backendURL = import.meta.env.VITE_BACKEND_URL<string>;
+const backendURL = String(import.meta.env.VITE_BACKEND_URL);
 
 const MainAdminPage = () => {
     const { authToken } = useOutletContext<AdminContext>();
-    const [version, setVersion] = useState(0);
     const [searchFilter, setSearchFilter] = useState<ParamsType>({});
-    const { data, error, isLoading, clearCache } =
+    const { data, error, isLoading, retry } =
         useCachedFetch<PaginatedBasePropertyResponse>(
             backendURL + "/api/v1/property/",
             searchFilter
@@ -35,8 +36,6 @@ const MainAdminPage = () => {
         });
     }
 
-    if (error) return <p>{error}</p>;
-
     const handleDelete = (id: number, state: string) => {
         fetchJSON({
             url: `${backendURL}/api/v1/property/${String(id)}`,
@@ -44,10 +43,13 @@ const MainAdminPage = () => {
             method: "DELETE",
             onSuccess: () => {
                 clearCache();
-                delete fetchedDataRef.current[state + String(id)];
-                setVersion((version) => version + 1);
+                const key = state + String(id);
+                delete fetchedDataRef.current[key];
+                setSearchFilter((searchFilter) => ({ ...searchFilter }));
             }
-        }).catch()
+        }).catch((error: unknown) => {
+            console.error(error);
+        });
     };
 
     return (
@@ -65,21 +67,28 @@ const MainAdminPage = () => {
                 Properties
             </h1>
             <motion.main layout className="flex flex-col p-4 gap-8">
-                {isLoading
-                    ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((number) => (
-                          <PropertySkeleton key={number} />
-                      ))
-                    : Object.values(fetchedDataRef.current).map(
-                          (property: BaseProperty) => (
-                              <PropertyCard
-                                  key={property.id}
-                                  {...property}
-                                  onDelete={() => {
-                                      handleDelete(property.id, property.state);
-                                  }}
-                              />
-                          )
-                      )}
+                {Object.values(fetchedDataRef.current).map(
+                    (property: BaseProperty) => (
+                        <PropertyCard
+                            key={property.id}
+                            {...property}
+                            onDelete={() => {
+                                handleDelete(property.id, property.state);
+                            }}
+                        />
+                    )
+                )}
+                
+                {isLoading &&
+                    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((number) => (
+                        <PropertySkeleton key={number} />
+                    ))}
+                                    {error && (
+                    <ErrorCard
+                        status={error.status}
+                        onRetry={retry}
+                    />
+                )}
             </motion.main>
         </>
     );

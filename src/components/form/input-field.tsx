@@ -19,7 +19,7 @@ interface InputFieldPropType extends BaseInputFieldPropType {
 
 const InputField = ({
     ref,
-    label,
+    label="",
     placeholder,
     inputType = "text",
     value,
@@ -62,7 +62,7 @@ interface TextFieldPropType extends BaseInputFieldPropType {
 
 export const TextField = ({
     ref,
-    label,
+    label = "",
     placeholder,
     value,
     onChange,

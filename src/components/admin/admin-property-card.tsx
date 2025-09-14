@@ -25,7 +25,6 @@ const AdminPropertyCard = ({
     description,
     lga,
     state,
-    id,
     onDelete
 }: AdminPropertyCard) => {
     const [isLoading, setIsLoading] = useState(false);
@@ -42,7 +41,10 @@ const AdminPropertyCard = ({
                     <p className="text-xs">{lga + ", " + state}</p>
 
                     <div className="flex gap-3 items-center ml-auto">
-                        <button className="transition-all text-yellow-500 active:bg-yellow-500/30 rounded-full p-2">
+                        <button
+                            type="button"
+                            className="transition-all text-yellow-500 active:bg-yellow-500/30 rounded-full p-2"
+                        >
                             <Pen size="18" />
                         </button>
 
@@ -54,7 +56,10 @@ const AdminPropertyCard = ({
                             className="transition-all text-red-500 active:bg-red-500/30 rounded-full p-2"
                         >
                             {isLoading ? (
-                                <LoaderCircle size="18" />
+                                <LoaderCircle
+                                    size="18"
+                                    className="animate-spin"
+                                />
                             ) : (
                                 <Trash size="18" />
                             )}

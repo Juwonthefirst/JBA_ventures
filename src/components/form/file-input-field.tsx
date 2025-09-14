@@ -1,4 +1,4 @@
-import { useState, type ReactNode, type RefObject } from "react";
+import { useState, type ReactNode } from "react";
 
 import {
     Dropzone,
@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/shadcn-io/dropzone/index.tsx";
 
 interface Props {
-    ref?: RefObject<File[] | undefined>;
+    value?: File;
     error?: string;
     accept?: { [key: string]: string[] };
     maxFiles?: number;
@@ -17,7 +17,6 @@ interface Props {
     onError?: (error: Error) => void;
     className?: string;
     disabled?: boolean;
-
     showPreview?: boolean;
     children: ReactNode;
 }
@@ -26,16 +25,14 @@ const FileInputField = ({
     showPreview = true,
     children,
     error,
+    value,
     ...props
 }: Props) => {
-    const [files, setFiles] = useState<File[] | undefined>(undefined);
     const [internalError, setInternalError] = useState("");
 
-    if (props.ref) props.ref.current = files;
-
     const handleUpload = (acceptedFiles: File[]) => {
-        if (showPreview) setFiles(acceptedFiles);
         props.onUpload?.(acceptedFiles);
+        setInternalError("");
     };
 
     const handleError = (error: Error) => {
@@ -43,20 +40,19 @@ const FileInputField = ({
         props.onError?.(error);
     };
 
+    const imgSRC = value && URL.createObjectURL(value);
+
     return (
         <div>
             <Dropzone
                 {...props}
-                src={files}
+                src={value && [value]}
                 onDrop={handleUpload}
                 onError={handleError}
             >
                 <DropzoneEmptyState>{children}</DropzoneEmptyState>
                 <DropzoneContent>
-                    <img
-                        className="h-64 w-full object-cover"
-                        src={files && URL.createObjectURL(files[0])}
-                    />
+                    <img className="h-64 w-full object-cover" src={imgSRC} />
                 </DropzoneContent>
             </Dropzone>
             {(error || internalError) && (

@@ -7,18 +7,17 @@ import type {
     PaginatedBasePropertyResponse
 } from "@/types.ts";
 import useCachedFetch from "@/hooks/use-cached-fetch.ts";
-import Popup from "../components/admin/delete-confirmation-popup.tsx";
+import ErrorCard from "@/components/error-card.tsx";
 
-const backendURL = import.meta.env.VITE_BACKEND_URL<string>;
+const backendURL = String(import.meta.env.VITE_BACKEND_URL);
 
 const MainPage = () => {
     const [searchFilter, setSearchFilter] = useState<ParamsType>({});
-    const { data, error, isLoading } =
+    const { data, error, isLoading, retry } =
         useCachedFetch<PaginatedBasePropertyResponse>(
             backendURL + "/api/v1/property/",
             searchFilter
         );
-
     const fetchedDataRef = useRef<{ [key: string]: BaseProperty }>({});
     if (data) {
         data.results.forEach((property) => {
@@ -26,23 +25,26 @@ const MainPage = () => {
             fetchedDataRef.current[key] = property;
         });
     }
-    if (error)
-        return (
-<p>Hello</p>
-        );
+
     return (
         <>
             <Header setSearchFilter={setSearchFilter} />
             <main className="flex flex-col p-4 py-16 gap-20 md:grid md:grid-cols-2 lg:grid-cols-3 gap-x-10">
-                {isLoading
-                    ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map((element) => (
-                          <PropertySkeleton key={element} />
-                      ))
-                    : Object.values(fetchedDataRef.current).map(
-                          (property: BaseProperty) => (
-                              <PropertyCard key={property.id} {...property} />
-                          )
-                      )}
+                {Object.values(fetchedDataRef.current).map(
+                    (property: BaseProperty) => (
+                        <PropertyCard key={property.id} {...property} />
+                    )
+                )}
+                {isLoading &&
+                    [1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map((element) => (
+                        <PropertySkeleton key={element} />
+                    ))}
+                {error && (
+                    <ErrorCard
+                        status={error.status}
+                        onRetry={retry}
+                    />
+                )}
             </main>
         </>
     );
