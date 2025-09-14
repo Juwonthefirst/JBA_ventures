@@ -7,6 +7,10 @@ const NotFoundPage = () => {
                 className="absolute top-0 left-0 w-full h-full object-cover"
                 src={bgImage}
             />
+            <div>
+            <p>404</p>
+            </div>
+           
         </div>
     );
 };

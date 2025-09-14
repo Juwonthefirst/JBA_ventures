@@ -8,16 +8,19 @@ import FileUploadSection from "@/components/admin/property-form/file-upload-sect
 import InfoSection from "@/components/admin/property-form/info-section.tsx";
 import LocationSection from "@/components/admin/property-form/location-section.tsx";
 import ExtraInfoSection from "@/components/admin/property-form/extra-info-section.tsx";
+import Popup from "@/components/popup.tsx";
+import ErrorCard from "@/components/error-card.tsx";
 
 import type {
     AdminContext,
     PropertyFormInputs,
     FormDataValues,
-    Property
+    Property,
+    ServerError
 } from "@/types.ts";
 import { clearCache } from "@/hooks/use-cached-fetch.ts";
 import { fetchJSON, urlToFile } from "@/helper.ts";
-
+import NotFoundPage from "../404-page.tsx";
 const backendURL = String(import.meta.env.VITE_BACKEND_URL);
 
 const UpdatePropertyForm = () => {
@@ -26,13 +29,17 @@ const UpdatePropertyForm = () => {
     const { handleSubmit, control, reset } = useForm<PropertyFormInputs>();
     const [retryCount, setRetryCount] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState("");
+    const [status, setStatus] = useState<{
+        code?: number;
+        message?: string | ServerError;
+    }>({});
     const currentPropertyDataRef = useRef<{ [key: string]: FormDataValues }>(
         {}
     );
-    if (typeof id !== "number") return;
 
-    const endpoint = `${backendURL}/api/v1/property/${String(id)}`;
+    if (status.code === 404) return <NotFoundPage />;
+
+    const endpoint = `${backendURL}/api/v1/property/${id}`;
     const onSubmit = async () => {
         let inputValues: PropertyFormInputs | undefined;
 
@@ -49,10 +56,10 @@ const UpdatePropertyForm = () => {
         // looks for updated fields by comparing them to their initial value
         Object.entries(inputValues).forEach(([key, value]) => {
             if (key === "extra_media") {
-                updatedFields.extra_media = value
+                updatedFields.extra_media = value;
             } else if (currentPropertyDataRef.current[key] !== value) {
                 updatedFields[key] =
-                    key === tags ? JSON.stringify(value) : value;
+                    key === "tags" ? JSON.stringify(value) : value;
             }
         });
         return updatedFields;
@@ -88,6 +95,7 @@ const UpdatePropertyForm = () => {
             onError: (status, error) => {
                 if (status === 600) {
                     alert("Error: " + error);
+                    setStatus({ code: status, message:error });
                 }
                 alert(JSON.stringify(error));
             }
@@ -111,6 +119,7 @@ const UpdatePropertyForm = () => {
                 // clearCache so new property shows on main admin page
                 // clears form inputs
                 const data = await response.json();
+                setStatus({ code: 200 });
                 clearCache();
                 alert(JSON.stringify(data));
             }}
@@ -118,7 +127,12 @@ const UpdatePropertyForm = () => {
                 //show error message
                 if (response instanceof Response) {
                     const data = await response.json();
-                    alert(JSON.stringify(data));
+
+                    //pass field errors from server into state to be read and rendered
+                    setStatus({
+                        code: response.status,
+                        message: response.status === 404 ? data : undefined
+                    });
                     return;
                 }
                 alert(response);
@@ -134,6 +148,11 @@ const UpdatePropertyForm = () => {
             >
                 Update
             </button>
+            {status.code && (
+                <Popup>
+                    <ErrorCard status={status.code} />
+                </Popup>
+            )}
         </Form>
     );
 };

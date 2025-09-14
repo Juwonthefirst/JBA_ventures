@@ -135,9 +135,22 @@ export const fetchData = async ({
 export const urlToFile = async (url: string) => {
     const response = await fetch(url);
     const blob = await response.blob();
-    const file: File & { fetched?: boolean }  = new File([blob], url, {
+    const file: File & { fetched?: boolean } = new File([blob], url, {
         type: blob.type
     });
-    file.fetched = true
+    file.fetched = true;
     return file;
+};
+
+export const getStatusMessage = (status: number) => {
+    switch (true) {
+        case status === 403:
+            return "You aren't allowed here";
+        case Math.floor(status / 100) === 5:
+            return "Our server is currently unavailable";
+        case status === 600:
+            return "Unable to connect to the server";
+        default:
+            return "Something went erong, try again later";
+    }
 };

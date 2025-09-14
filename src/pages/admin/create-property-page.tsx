@@ -1,11 +1,14 @@
 import { useOutletContext } from "react-router";
 import { useForm, type SubmitHandler } from "react-hook-form";
+import { Component } from "lucide-react";
+import { useState } from 'react'
 
 import Form from "@/components/form/form.tsx";
 import FileUploadSection from "@/components/admin/property-form/file-upload-section.tsx";
 import InfoSection from "@/components/admin/property-form/info-section.tsx";
 import LocationSection from "@/components/admin/property-form/location-section.tsx";
 import ExtraInfoSection from "@/components/admin/property-form/extra-info-section.tsx";
+import Popup from "@/components/popup.tsx";
 
 import type { AdminContext, PropertyFormInputs } from "@/types.ts";
 import { clearCache } from "@/hooks/use-cached-fetch.ts";
@@ -15,7 +18,10 @@ const backendURL = String(import.meta.env.VITE_BACKEND_URL);
 const CreatePropertyForm = () => {
     const { authToken } = useOutletContext<AdminContext>();
     const { control, handleSubmit, reset } = useForm<PropertyFormInputs>();
-
+    const [status, setStatus] = useState<{
+        status?: number;
+        message?: string;
+    }>({});
     const onSubmit = async () => {
         let inputValues: PropertyFormInputs | undefined;
 
@@ -30,7 +36,6 @@ const CreatePropertyForm = () => {
 
         return {
             ...inputValues,
-            extra_media_upload: inputValues.extra_media,
             tags: JSON.stringify(inputValues.tags)
         };
     };
@@ -71,6 +76,7 @@ const CreatePropertyForm = () => {
             >
                 Create
             </button>
+            <Popup className=""></Popup>
         </Form>
     );
 };

@@ -5,7 +5,7 @@ import BaseAdminPage from "./pages/admin/base-admin-page.tsx";
 import MainAdminPage from "./pages/admin/main-admin-page.tsx";
 import CreatePropertyPage from "./pages/admin/create-property-page.tsx";
 import UpdatePropertyPage from "./pages/admin/update-property-page.tsx";
-import NotFoundPage from "./pages/admin/404-page.tsx";
+import NotFoundPage from "./pages/404-page.tsx";
 
 const router = createBrowserRouter([
     {

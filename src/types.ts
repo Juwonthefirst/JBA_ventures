@@ -63,3 +63,5 @@ export type FormDataValues =
     | string[]
     | number
     | number[];
+
+export type ServerError = { [key: string]: string[] };
