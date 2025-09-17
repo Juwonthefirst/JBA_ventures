@@ -2,64 +2,64 @@ import { type ReactNode } from "react";
 import { objectToFormData, fetchData } from "@/helper.ts";
 
 interface Props {
-    url?: string;
-    method?: "POST" | "PATCH" | "PUT";
-    headers?: Record<string, string>;
-    extraInit?: RequestInit;
-    encType?: "application/json" | "multipart/form-data";
-    className?: string;
-    onSubmit: () => (void | object | Promise<void | object>);
-    onSuccess?: (response: Response) => void;
-    onError?: (response: Response | string) => void;
-    children: ReactNode;
+  url?: string;
+  method?: "POST" | "PATCH" | "PUT";
+  headers?: Record<string, string>;
+  extraInit?: RequestInit;
+  encType?: "application/json" | "multipart/form-data";
+  className?: string;
+  onSubmit: () => undefined | object | Promise<undefined | object>;
+  onSuccess?: (response: Response) => void | Promise<void>;
+  onError?: (response: Response | string) => void | Promise<void>;
+  children: ReactNode;
 }
 
 const Form = ({
-    url,
-    method = "POST",
-    headers,
-    extraInit,
-    encType = "application/json",
-    className = "",
-    onSubmit,
-    onSuccess,
-    onError,
-    children
+  url,
+  method = "POST",
+  headers,
+  extraInit,
+  encType = "application/json",
+  className = "",
+  onSubmit,
+  onSuccess,
+  onError,
+  children,
 }: Props) => {
-    if (!headers) headers = {};
-    if (!extraInit) extraInit = {};
+  if (!headers) headers = {};
+  if (!extraInit) extraInit = {};
 
-    return (
-        <form
-            noValidate
-            className={"flex flex-col gap-6 group " + className}
-            onSubmit={async (event) => {
-                event.preventDefault();
-                const returnValue = await onSubmit();
-                if (!returnValue || !url) return;
+  return (
+    <form
+      noValidate
+      className={"flex flex-col gap-6 group " + className}
+      onSubmit={(event) => {
+        event.preventDefault();
+        const returnValue = onSubmit();
+        if (!returnValue || !url) return;
 
-                const body =
-                    encType === "multipart/form-data"
-                        ? objectToFormData({ data: returnValue })
-                        : JSON.stringify(returnValue);
+        const body =
+          encType === "multipart/form-data"
+            ? objectToFormData({ data: returnValue })
+            : JSON.stringify(returnValue);
 
-                if (encType === "application/json")
-                    headers["Content-Type"] = "application/json";
+        if (encType === "application/json")
+          headers["Content-Type"] = "application/json";
 
-                await fetchData({
-                    url,
-                    headers,
-                    body,
-                    extraInit,
-                    method,
-                    onSuccess,
-                    onError
-                });
-            }}
-        >
-            {children}
-        </form>
-    );
+        void fetchData({
+          url,
+          headers,
+          body,
+          extraInit,
+          method,
+          onSuccess,
+          onError,
+        });
+      }}
+    >
+      {children}
+    </form>
+  );
 };
 
 export default Form;

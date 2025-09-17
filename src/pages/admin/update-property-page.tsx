@@ -13,162 +13,153 @@ import StatusCard from "@/components/status-card.tsx";
 import NotFoundPage from "../404-page.tsx";
 
 import type {
-    AdminContext,
-    PropertyFormInputs,
-    FormDataValues,
-    Property,
-    ServerError
+  AdminContext,
+  PropertyFormInputs,
+  FormDataValues,
+  Property,
+  ServerError,
 } from "@/types.ts";
 import { clearCache } from "@/hooks/use-cached-fetch.ts";
 import { fetchJSON, urlToFile } from "@/helper.ts";
 const backendURL = String(import.meta.env.VITE_BACKEND_URL);
 
 const UpdatePropertyForm = () => {
-    const { id } = useParams();
-    const { authToken } = useOutletContext<AdminContext>();
-    const { handleSubmit, control, reset, setError } =
-        useForm<PropertyFormInputs>();
-    const [retryCount, setRetryCount] = useState(0);
-    const [isLoading, setIsLoading] = useState(true);
-    const [statusCode, setStatusCode] = useState<number | null>(null);
-    const currentPropertyDataRef = useRef<{ [key: string]: FormDataValues }>(
-        {}
-    );
+  const { id } = useParams();
+  const { authToken } = useOutletContext<AdminContext>();
+  const { handleSubmit, control, reset, setError } =
+    useForm<PropertyFormInputs>();
+  const [retryCount, setRetryCount] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [statusCode, setStatusCode] = useState<number | null>(null);
+  const currentPropertyDataRef = useRef<{ [key: string]: FormDataValues }>({});
 
-    if (statusCode === 404) return <NotFoundPage />;
+  const endpoint = `${backendURL}/api/v1/property/${id || ""}`;
+  const onSubmit = async () => {
+    let inputValues: PropertyFormInputs | undefined;
 
-    const endpoint = `${backendURL}/api/v1/property/${id}`;
-    const onSubmit = async () => {
-        let inputValues: PropertyFormInputs | undefined;
-
-        const onSubmitSuccess: SubmitHandler<PropertyFormInputs> = (
-            submittedData
-        ) => {
-            inputValues = submittedData;
-        };
-        await handleSubmit(onSubmitSuccess)();
-
-        if (!inputValues) return;
-
-        const updatedFields: { [key: string]: FormDataValues } = {};
-        // looks for updated fields by comparing them to their initial value
-        Object.entries(inputValues).forEach(([key, value]) => {
-            if (key === "extra_media") {
-                updatedFields.extra_media = value;
-            } else if (currentPropertyDataRef.current[key] !== value) {
-                updatedFields[key] =
-                    key === "tags" ? JSON.stringify(value) : value;
-            }
-        });
-        return updatedFields;
+    const onSubmitSuccess: SubmitHandler<PropertyFormInputs> = (
+      submittedData
+    ) => {
+      inputValues = submittedData;
     };
+    await handleSubmit(onSubmitSuccess)();
 
-    useEffect(() => {
-        const controller = new AbortController();
-        const signal = controller.signal;
-        setIsLoading(true);
-        fetchJSON<Property>({
-            url: endpoint,
-            extraInit: { signal },
-            onSuccess: async (data) => {
-                // fetch data then convert the images into File objects to pass into File field
-                const mainImageFile = await urlToFile(data.main_image);
-                const arrayOfUrlToFile = data.extra_media.map((fileUrl) =>
-                    urlToFile(fileUrl)
-                );
-                const extraFiles = await Promise.all(arrayOfUrlToFile);
-                const fetchedFormValues = {
-                    ...data,
-                    main_image: mainImageFile,
-                    extra_media: extraFiles,
-                    tags: JSON.parse(data.tags)
-                };
-                reset(fetchedFormValues);
-                currentPropertyDataRef.current = fetchedFormValues;
-                setIsLoading(false);
-            },
-            onError: (status, error) => {
-                if (status === 600) alert("Error: " + error);
-                alert(JSON.stringify(error));
-                setStatusCode(status);
-                setIsLoading(false);
-            }
-        });
-        return () => {
-            controller.abort();
+    if (!inputValues) return;
+
+    const updatedFields: { [key: string]: FormDataValues } = {};
+    // looks for updated fields by comparing them to their initial value
+    Object.entries(inputValues).forEach(([key, value]) => {
+      if (key === "extra_media") {
+        updatedFields.extra_media = value;
+      } else if (currentPropertyDataRef.current[key] !== value) {
+        updatedFields[key] = key === "tags" ? JSON.stringify(value) : value;
+      }
+    });
+    return updatedFields;
+  };
+
+  useEffect(() => {
+    const controller = new AbortController();
+    const signal = controller.signal;
+    setIsLoading(true);
+    void fetchJSON<Property>({
+      url: endpoint,
+      extraInit: { signal },
+      onSuccess: async (data) => {
+        // fetch data then convert the images into File objects to pass into File field
+        const mainImageFile = await urlToFile(data.main_image);
+        const arrayOfUrlToFile = data.extra_media.map((fileUrl) =>
+          urlToFile(fileUrl)
+        );
+        const extraFiles = await Promise.all(arrayOfUrlToFile);
+        const fetchedFormValues = {
+          ...data,
+          main_image: mainImageFile,
+          extra_media: extraFiles,
+          tags: Object(JSON.parse(data.tags)),
         };
-    }, [retryCount]);
+        reset(fetchedFormValues);
+        currentPropertyDataRef.current = fetchedFormValues;
+        setIsLoading(false);
+      },
+      onError: (status, error) => {
+        if (status === 600) alert("Error: " + error);
+        alert(JSON.stringify(error));
+        setStatusCode(status);
+        setIsLoading(false);
+      },
+    });
+    return () => {
+      controller.abort();
+    };
+  }, [retryCount, endpoint, reset]);
 
-    if (isLoading) return <LoaderCircle className="animate-spin" size="96" />;
-    return (
-        <Form
-            className="p-6"
-            url={endpoint}
-            method="PATCH"
-            headers={{ Authorization: `Bearer ${authToken}` }}
-            encType="multipart/form-data"
-            onSubmit={onSubmit}
-            onSuccess={async (response) => {
-                //Todo remove response.json after guarantee form works
-                // clearCache so new property shows on main admin page
-                // clears form inputs
-                const data = await response.json();
-                setStatusCode(200);
-                clearCache();
-                alert(JSON.stringify(data));
-            }}
-            onError={async (response) => {
-                //show error message
-                const errorStatusCode =
-                    response instanceof Response ? response.status : 600;
-                if (errorStatusCode === 400 && response instanceof Response) {
-                    const data: ServerError = await response.json();
-                    Object.entries(data).forEach(([name, value]) => {
-                        setError(name as keyof ServerError, {
-                            type: "server",
-                            message: value[0]
-                        });
-                    });
-                    alert(JSON.stringify(data));
-                    return;
-                }
+  if (statusCode === 404) return <NotFoundPage />;
 
-                setStatusCode(errorStatusCode);
-                alert(response);
-            }}
+  if (isLoading) return <LoaderCircle className="animate-spin" size="96" />;
+  return (
+    <Form
+      className="p-6"
+      url={endpoint}
+      method="PATCH"
+      headers={{ Authorization: `Bearer ${authToken}` }}
+      encType="multipart/form-data"
+      onSubmit={onSubmit}
+      onSuccess={async (response) => {
+        //Todo remove response.json after guarantee form works
+        // clearCache so new property shows on main admin page
+        // clears form inputs
+        const data = await response.json();
+        setStatusCode(200);
+        clearCache();
+        alert(JSON.stringify(data));
+      }}
+      onError={async (response) => {
+        //show error message
+        const errorStatusCode =
+          response instanceof Response ? response.status : 600;
+        if (errorStatusCode === 400 && response instanceof Response) {
+          const data: ServerError = await response.json();
+          Object.entries(data).forEach(([name, value]) => {
+            setError(name as keyof ServerError, {
+              type: "server",
+              message: value[0],
+            });
+          });
+          alert(JSON.stringify(data));
+          return;
+        }
+
+        setStatusCode(errorStatusCode);
+        alert(response);
+      }}
+    >
+      <FileUploadSection control={control} />
+      <InfoSection control={control} />
+      <LocationSection control={control} />
+      <ExtraInfoSection control={control} />
+      <button
+        type="submit"
+        disabled={isLoading}
+        className="bg-black text-white dark:bg-white dark:text-black w-full p-2 text-lg font-medium rounded-lg"
+      >
+        {isLoading ? <LoaderCircle className="animate-spin" /> : "Update"}
+      </button>
+      {statusCode && (
+        <Popup
+          open={Boolean(statusCode)}
+          onChange={() => {
+            setStatusCode(null);
+          }}
         >
-            <FileUploadSection control={control} />
-            <InfoSection control={control} />
-            <LocationSection control={control} />
-            <ExtraInfoSection control={control} />
-            <button
-                type="submit"
-                disabled={isLoading}
-                className="bg-black text-white dark:bg-white dark:text-black w-full p-2 text-lg font-medium rounded-lg"
-            >
-                {isLoading ? (
-                    <LoaderCircle className="animate-spin" />
-                ) : (
-                    "Update"
-                )}
-            </button>
-            {statusCode && (
-                <Popup
-                    open={Boolean(statusCode)}
-                    onChange={() => {
-                        setStatusCode(null);
-                    }}
-                >
-                    <StatusCard
-                        status={statusCode}
-                        message={
-                            statusCode <= 299 && "Property updated successfully"
-                        }
-                    />
-                </Popup>
-            )}
-        </Form>
-    );
+          <StatusCard
+            status={statusCode}
+            message={statusCode <= 299 && "Property updated successfully"}
+          />
+        </Popup>
+      )}
+    </Form>
+  );
 };
 
 export default UpdatePropertyForm;
