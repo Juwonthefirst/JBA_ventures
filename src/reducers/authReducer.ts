@@ -37,10 +37,11 @@ const authReducer = (
             };
 
         case "SET_FETCH_ERROR":
+            
             return {
                 ...state,
                 fetchType: undefined,
-                error: action.error
+                error: Number(action.error) || 600
             };
     }
 };

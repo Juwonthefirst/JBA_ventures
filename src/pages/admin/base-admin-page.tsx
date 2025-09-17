@@ -7,7 +7,7 @@ const AdminPage = () => {
     if (auth.fetchType === "initial") return <p>fetching....</p>;
     return (
         <>
-            {/*auth.isAuthenticated*/ true ? (
+            {auth.isAuthenticated ? (
                 <Outlet context={{ authToken: auth.authToken }} />
             ) : (
                 <div className="flex flex-col items-center justify-center h-screen">

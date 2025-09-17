@@ -33,8 +33,7 @@ const useAuth = (): UseAuthReturnType => {
                 access?: string;
                 error?: string;
             };
-            if (!response.ok)
-                throw new Error(data.error || response.statusText);
+            if (!response.ok) throw new Error(String(response.status));
             dispatch({ type: "SET_ACCESS_TOKEN", access: data.access });
         },
         [backendURL]
@@ -46,7 +45,7 @@ const useAuth = (): UseAuthReturnType => {
                 signal
             });
             const data = (await response.json()) as { csrf: string };
-            if (!response.ok) throw new Error(response.statusText);
+            if (!response.ok) throw new Error(String(response.status));
             csrfTokenRef.current = data.csrf;
         },
         [backendURL]
@@ -74,7 +73,7 @@ const useAuth = (): UseAuthReturnType => {
 
     useEffect(() => {
         if (!authState.isAuthenticated) return;
-        alert("refreshing");
+
         const abortController = new AbortController();
         const intervalKey = setInterval(() => {
             refreshAccessToken(abortController.signal).catch(
@@ -109,8 +108,8 @@ const useAuth = (): UseAuthReturnType => {
                 error?: string;
             };
 
-            if (!response.ok) throw new Error(data.error);
-            //if (data.access)
+            if (!response.ok) throw new Error(String(response.status));
+
             dispatch({
                 type: "SET_ACCESS_TOKEN",
                 access: data.access

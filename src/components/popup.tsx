@@ -18,8 +18,10 @@ interface Props {
 const Popup = ({ open, children, onChange, className }: Props) => {
     return (
         <AlertDialog open={open} onOpenChange={onChange}>
-            <AlertDialogContent className="w-3/4 bg-white dark:bg-black">
-                <AlertDialogDescription className={className}>
+            <AlertDialogContent className="w-3/4 border-white/30 bg-white dark:bg-black">
+                <AlertDialogDescription
+                    className={"p-0 h-fit w-fit" + className}
+                >
                     {children}
                 </AlertDialogDescription>
                 <AlertDialogFooter>

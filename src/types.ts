@@ -29,7 +29,7 @@ export interface PaginatedBasePropertyResponse {
 
 export interface AuthStateType {
     authToken: string | undefined;
-    error: string | undefined;
+    error: number | undefined;
     fetchType: undefined | "login" | "initial";
     isAuthenticated: boolean;
 }
@@ -64,4 +64,4 @@ export type FormDataValues =
     | number
     | number[];
 
-export type ServerError = { [key: string]: string[] };
+export type ServerError = Record<keyof PropertyFormInputs, string[]>

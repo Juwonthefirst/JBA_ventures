@@ -7,7 +7,7 @@ import type {
     PaginatedBasePropertyResponse
 } from "@/types.ts";
 import useCachedFetch from "@/hooks/use-cached-fetch.ts";
-import ErrorCard from "@/components/error-card.tsx";
+import StatusCard from "@/components/status-card.tsx";
 
 const backendURL = String(import.meta.env.VITE_BACKEND_URL);
 
@@ -40,9 +40,10 @@ const MainPage = () => {
                         <PropertySkeleton key={element} />
                     ))}
                 {error && (
-                    <ErrorCard
+                    <StatusCard
                         status={error.status}
                         onRetry={retry}
+                        withRetry
                     />
                 )}
             </main>

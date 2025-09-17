@@ -2,15 +2,15 @@ import InputField from "./form/input-field.tsx";
 import Form from "./form/form.tsx";
 import { useState } from "react";
 import { LoaderCircle } from "lucide-react";
-import Popup from "@/components/popup.tsx";
+import { getStatusMessage } from "@/helper.ts";
 
 interface Prop {
     fetchType: string | undefined;
-    error: string | undefined;
+    error: number | undefined;
     login: (email: string, password: string) => void;
 }
 
-const LoginForm = ({ login, error: loginError, fetchType }: Prop) => {
+const LoginForm = ({ login, error: loginErrorStatus, fetchType }: Prop) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [errors, setErrors] = useState<{ email?: string; password?: string }>(
@@ -62,6 +62,7 @@ const LoginForm = ({ login, error: loginError, fetchType }: Prop) => {
                 <button
                     className="flex justify-center bg-black text-white text-inherit p-1 text-lg font-medium rounded-lg dark:text-black dark:bg-white"
                     type="submit"
+                    disabled={fetchType === "login"}
                 >
                     {fetchType === "login" ? (
                         <LoaderCircle className="animate-spin" />
@@ -70,6 +71,9 @@ const LoginForm = ({ login, error: loginError, fetchType }: Prop) => {
                     )}
                 </button>
             </Form>
+            {loginErrorStatus && <p className="text-sm text-red-500 self-center">
+                {getStatusMessage(loginErrorStatus)}
+            </p>}
         </div>
     );
 };

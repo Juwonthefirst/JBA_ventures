@@ -1,3 +1,5 @@
+import { XCircle, CheckCircle, RadioTower } from "lucide-react";
+
 interface FetchJson<Type> {
     url: string;
     headers?: Record<string, string>;
@@ -142,15 +144,28 @@ export const urlToFile = async (url: string) => {
     return file;
 };
 
-export const getStatusMessage = (status: number) => {
+export const getStatusMessage = (statusCode: number) => {
     switch (true) {
-        case status === 403:
+        case statusCode === 401:
+            return "You aren't authenticated, try to login again";
+        case statusCode === 403:
             return "You aren't allowed here";
-        case Math.floor(status / 100) === 5:
+        case Math.floor(statusCode / 100) === 5:
             return "Our server is currently unavailable";
-        case status === 600:
+        case statusCode === 600:
             return "Unable to connect to the server";
         default:
             return "Something went erong, try again later";
+    }
+};
+
+export const getStatusIcon = (statusCode: number) => {
+    switch (Math.floor(statusCode / 100)) {
+        case 2:
+            return CheckCircle;
+        case 4:
+            return XCircle;
+        default:
+            return RadioTower;
     }
 };

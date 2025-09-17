@@ -2,7 +2,7 @@ import { Link, useOutletContext } from "react-router";
 import { useState, useRef } from "react";
 import { motion } from "motion/react";
 
-import ErrorCard from "@/components/error-card.tsx";
+import StatusCard from "@/components/status-card.tsx";
 import SearchBox from "@/components/header/search-box.tsx";
 import PropertyCard, {
     PropertySkeleton
@@ -78,15 +78,16 @@ const MainAdminPage = () => {
                         />
                     )
                 )}
-                
+
                 {isLoading &&
                     [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((number) => (
                         <PropertySkeleton key={number} />
                     ))}
-                                    {error && (
-                    <ErrorCard
+                {error && (
+                    <StatusCard
                         status={error.status}
                         onRetry={retry}
+                        withRetry
                     />
                 )}
             </motion.main>

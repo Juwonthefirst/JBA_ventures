@@ -4,20 +4,20 @@ import TagList from "@/components/tag-list.tsx";
 import Skeleton from "@/components/property-page-skeleton.tsx";
 import useCachedFetch from "@/hooks/use-cached-fetch.ts";
 import { type Property } from "@/types.ts";
-import ErrorCard from "@/components/error-card.tsx";
+import StatusCard from "@/components/status-card.tsx";
 import NotFoundPage from "./404-page.tsx";
 const backendURL = String(import.meta.env.VITE_BACKEND_URL);
 
 const PropertyPage = () => {
     const { id } = useParams();
     const { isLoading, error, data, retry } = useCachedFetch<Property>(
-        `${backendURL}/api/v1/property/${id}`
+        `${backendURL}/api/v1/property/${id!}`
     );
 
     if (isLoading) {
         return <Skeleton />;
     } else if (error?.status === 404) return <NotFoundPage />;
-    else if (error) return <ErrorCard status={error.status} onRetry={retry} />;
+    else if (error) return <StatusCard status={error.status} onRetry={retry} withRetry/>;
 
     if (data)
         return (

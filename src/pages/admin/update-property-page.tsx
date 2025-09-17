@@ -9,7 +9,8 @@ import InfoSection from "@/components/admin/property-form/info-section.tsx";
 import LocationSection from "@/components/admin/property-form/location-section.tsx";
 import ExtraInfoSection from "@/components/admin/property-form/extra-info-section.tsx";
 import Popup from "@/components/popup.tsx";
-import ErrorCard from "@/components/error-card.tsx";
+import StatusCard from "@/components/status-card.tsx";
+import NotFoundPage from "../404-page.tsx";
 
 import type {
     AdminContext,
@@ -20,24 +21,21 @@ import type {
 } from "@/types.ts";
 import { clearCache } from "@/hooks/use-cached-fetch.ts";
 import { fetchJSON, urlToFile } from "@/helper.ts";
-import NotFoundPage from "../404-page.tsx";
 const backendURL = String(import.meta.env.VITE_BACKEND_URL);
 
 const UpdatePropertyForm = () => {
     const { id } = useParams();
     const { authToken } = useOutletContext<AdminContext>();
-    const { handleSubmit, control, reset } = useForm<PropertyFormInputs>();
+    const { handleSubmit, control, reset, setError } =
+        useForm<PropertyFormInputs>();
     const [retryCount, setRetryCount] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
-    const [status, setStatus] = useState<{
-        code?: number;
-        message?: string | ServerError;
-    }>({});
+    const [statusCode, setStatusCode] = useState<number | null>(null);
     const currentPropertyDataRef = useRef<{ [key: string]: FormDataValues }>(
         {}
     );
 
-    if (status.code === 404) return <NotFoundPage />;
+    if (statusCode === 404) return <NotFoundPage />;
 
     const endpoint = `${backendURL}/api/v1/property/${id}`;
     const onSubmit = async () => {
@@ -73,16 +71,12 @@ const UpdatePropertyForm = () => {
             url: endpoint,
             extraInit: { signal },
             onSuccess: async (data) => {
-                setIsLoading(false);
                 // fetch data then convert the images into File objects to pass into File field
+                const mainImageFile = await urlToFile(data.main_image);
                 const arrayOfUrlToFile = data.extra_media.map((fileUrl) =>
                     urlToFile(fileUrl)
                 );
-                const [mainImageFile, ...extraFiles] = await Promise.all([
-                    urlToFile(data.main_image),
-                    ...arrayOfUrlToFile
-                ]);
-
+                const extraFiles = await Promise.all(arrayOfUrlToFile);
                 const fetchedFormValues = {
                     ...data,
                     main_image: mainImageFile,
@@ -91,13 +85,13 @@ const UpdatePropertyForm = () => {
                 };
                 reset(fetchedFormValues);
                 currentPropertyDataRef.current = fetchedFormValues;
+                setIsLoading(false);
             },
             onError: (status, error) => {
-                if (status === 600) {
-                    alert("Error: " + error);
-                    setStatus({ code: status, message:error });
-                }
+                if (status === 600) alert("Error: " + error);
                 alert(JSON.stringify(error));
+                setStatusCode(status);
+                setIsLoading(false);
             }
         });
         return () => {
@@ -105,7 +99,7 @@ const UpdatePropertyForm = () => {
         };
     }, [retryCount]);
 
-    if (isLoading) return <LoaderCircle size="96" />;
+    if (isLoading) return <LoaderCircle className="animate-spin" size="96" />;
     return (
         <Form
             className="p-6"
@@ -119,22 +113,27 @@ const UpdatePropertyForm = () => {
                 // clearCache so new property shows on main admin page
                 // clears form inputs
                 const data = await response.json();
-                setStatus({ code: 200 });
+                setStatusCode(200);
                 clearCache();
                 alert(JSON.stringify(data));
             }}
             onError={async (response) => {
                 //show error message
-                if (response instanceof Response) {
-                    const data = await response.json();
-
-                    //pass field errors from server into state to be read and rendered
-                    setStatus({
-                        code: response.status,
-                        message: response.status === 404 ? data : undefined
+                const errorStatusCode =
+                    response instanceof Response ? response.status : 600;
+                if (errorStatusCode === 400 && response instanceof Response) {
+                    const data: ServerError = await response.json();
+                    Object.entries(data).forEach(([name, value]) => {
+                        setError(name as keyof ServerError, {
+                            type: "server",
+                            message: value[0]
+                        });
                     });
+                    alert(JSON.stringify(data));
                     return;
                 }
+
+                setStatusCode(errorStatusCode);
                 alert(response);
             }}
         >
@@ -144,13 +143,28 @@ const UpdatePropertyForm = () => {
             <ExtraInfoSection control={control} />
             <button
                 type="submit"
+                disabled={isLoading}
                 className="bg-black text-white dark:bg-white dark:text-black w-full p-2 text-lg font-medium rounded-lg"
             >
-                Update
+                {isLoading ? (
+                    <LoaderCircle className="animate-spin" />
+                ) : (
+                    "Update"
+                )}
             </button>
-            {status.code && (
-                <Popup>
-                    <ErrorCard status={status.code} />
+            {statusCode && (
+                <Popup
+                    open={Boolean(statusCode)}
+                    onChange={() => {
+                        setStatusCode(null);
+                    }}
+                >
+                    <StatusCard
+                        status={statusCode}
+                        message={
+                            statusCode <= 299 && "Property updated successfully"
+                        }
+                    />
                 </Popup>
             )}
         </Form>
