@@ -30,7 +30,9 @@ const UpdatePropertyForm = () => {
   const { handleSubmit, control, reset, setError } =
     useForm<PropertyFormInputs>();
   const [retryCount, setRetryCount] = useState(0);
-  const [isFetching, setIsFetching] = useState(true);
+  const [propertyFetchState, setPropertyFetchState] = useState<
+    "idle" | "fetching" | "fetched"
+  >("fetching");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [statusCode, setStatusCode] = useState<number | null>(null);
   const currentPropertyDataRef = useRef<{ [key: string]: FormDataValues }>({});
