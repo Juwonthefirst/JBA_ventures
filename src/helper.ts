@@ -33,20 +33,22 @@ export const fetchJSON = async <Type>({
       ...extraInit,
     });
 
-    const data: Type = await response.json().catch();
+    const data = (await response.json().catch()) as Type;
     if (!response.ok) {
-      onError?.(response.status, JSON.stringify(data));
+      void onError?.(response.status, JSON.stringify(data));
       return;
     }
-    onSuccess?.(data);
+    void onSuccess?.(data);
   } catch (error) {
     if (error instanceof Error && error.name !== "AbortError")
-      onError?.(600, error.message);
+      void onError?.(600, error.message);
   }
 };
 
 interface ObjectToFormDataPara {
-  data: { [key: string]: string | number | Blob | string[]| };
+  data: {
+    [key: string]: string | number | Blob | string[] | number[] | Blob[];
+  };
   formData?: FormData;
   namespace?: string;
 }
@@ -61,18 +63,19 @@ export const objectToFormData = ({
     const formKey = namespace ? `${namespace}[${key}]` : key;
     if (typeof value === "number") {
       formData.append(formKey, String(value));
-    } else if (value instanceof File) {
+    } else if (value instanceof Blob || typeof value === "string") {
       formData.append(formKey, value);
     } else if (Array.isArray(value)) {
       value.forEach((item, index) => {
-        if (typeof item === "object" && !(item instanceof File)) {
+        if (typeof item === "object" && !(item instanceof Blob)) {
           objectToFormData({
             data: item,
             formData,
-            namespace: `${formKey}[${index}]`,
+            namespace: `${formKey}[${String(index)}]`,
           });
         } else {
-          formData.append(`${formKey}[${index}]`, item);
+          if (typeof item === "number") item = String(item);
+          formData.append(`${formKey}[${String(index)}]`, item);
         }
       });
     } else if (typeof value === "object") {

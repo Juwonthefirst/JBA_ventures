@@ -35,7 +35,10 @@ const UpdatePropertyForm = () => {
 
   const endpoint = `${backendURL}/api/v1/property/${id || ""}`;
   const onSubmit = async () => {
-    let inputValues: PropertyFormInputs | undefined;
+    setIsLoading(true);
+    let inputValues:
+      | Record<keyof PropertyFormInputs, FormDataValues>
+      | undefined;
 
     const onSubmitSuccess: SubmitHandler<PropertyFormInputs> = (
       submittedData
@@ -76,7 +79,7 @@ const UpdatePropertyForm = () => {
           ...data,
           main_image: mainImageFile,
           extra_media: extraFiles,
-          tags: Object(JSON.parse(data.tags)),
+          tags: JSON.parse(data.tags),
         };
         reset(fetchedFormValues);
         currentPropertyDataRef.current = fetchedFormValues;
@@ -105,21 +108,21 @@ const UpdatePropertyForm = () => {
       headers={{ Authorization: `Bearer ${authToken}` }}
       encType="multipart/form-data"
       onSubmit={onSubmit}
-      onSuccess={async (response) => {
+      onSuccess={() => {
+        setIsLoading(false);
         //Todo remove response.json after guarantee form works
         // clearCache so new property shows on main admin page
         // clears form inputs
-        const data = await response.json();
         setStatusCode(200);
         clearCache();
-        alert(JSON.stringify(data));
       }}
       onError={async (response) => {
+        setIsLoading(false);
         //show error message
         const errorStatusCode =
           response instanceof Response ? response.status : 600;
         if (errorStatusCode === 400 && response instanceof Response) {
-          const data: ServerError = await response.json();
+          const data = (await response.json()) as ServerError;
           Object.entries(data).forEach(([name, value]) => {
             setError(name as keyof ServerError, {
               type: "server",
@@ -154,7 +157,7 @@ const UpdatePropertyForm = () => {
         >
           <StatusCard
             status={statusCode}
-            message={statusCode <= 299 && "Property updated successfully"}
+            message={statusCode <= 299 ? "Property updated successfully" : ""}
           />
         </Popup>
       )}
