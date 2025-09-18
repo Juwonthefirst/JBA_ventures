@@ -29,13 +29,14 @@ const UpdatePropertyForm = () => {
   const { handleSubmit, control, reset, setError } =
     useForm<PropertyFormInputs>();
   const [retryCount, setRetryCount] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isFetching, setIsFetching] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [statusCode, setStatusCode] = useState<number | null>(null);
   const currentPropertyDataRef = useRef<{ [key: string]: FormDataValues }>({});
 
-  const endpoint = `${backendURL}/api/v1/property/${id || ""}`;
+  const endpoint = `${backendURL}/api/v1/property/${String(id)}`;
   const onSubmit = async () => {
-    setIsLoading(true);
+    setIsSubmitting(true);
     let inputValues:
       | Record<keyof PropertyFormInputs, FormDataValues>
       | undefined;
@@ -64,7 +65,7 @@ const UpdatePropertyForm = () => {
   useEffect(() => {
     const controller = new AbortController();
     const signal = controller.signal;
-    setIsLoading(true);
+    setIsFetching(true);
     void fetchJSON<Property>({
       url: endpoint,
       extraInit: { signal },
@@ -79,17 +80,17 @@ const UpdatePropertyForm = () => {
           ...data,
           main_image: mainImageFile,
           extra_media: extraFiles,
-          tags: JSON.parse(data.tags),
+          tags: JSON.parse(data.tags) as object,
         };
         reset(fetchedFormValues);
         currentPropertyDataRef.current = fetchedFormValues;
-        setIsLoading(false);
+        setIsFetching(false);
       },
       onError: (status, error) => {
         if (status === 600) alert("Error: " + error);
         alert(JSON.stringify(error));
         setStatusCode(status);
-        setIsLoading(false);
+        setIsFetching(false);
       },
     });
     return () => {
@@ -99,7 +100,7 @@ const UpdatePropertyForm = () => {
 
   if (statusCode === 404) return <NotFoundPage />;
 
-  if (isLoading) return <LoaderCircle className="animate-spin" size="96" />;
+  if (isFetching) return <LoaderCircle className="animate-spin" size="96" />;
   return (
     <Form
       className="p-6"
@@ -109,7 +110,7 @@ const UpdatePropertyForm = () => {
       encType="multipart/form-data"
       onSubmit={onSubmit}
       onSuccess={() => {
-        setIsLoading(false);
+        setIsSubmitting(false);
         //Todo remove response.json after guarantee form works
         // clearCache so new property shows on main admin page
         // clears form inputs
@@ -117,7 +118,7 @@ const UpdatePropertyForm = () => {
         clearCache();
       }}
       onError={async (response) => {
-        setIsLoading(false);
+        setIsSubmitting(false);
         //show error message
         const errorStatusCode =
           response instanceof Response ? response.status : 600;
@@ -143,10 +144,10 @@ const UpdatePropertyForm = () => {
       <ExtraInfoSection control={control} />
       <button
         type="submit"
-        disabled={isLoading}
+        disabled={isSubmitting}
         className="bg-black text-white dark:bg-white dark:text-black w-full p-2 text-lg font-medium rounded-lg"
       >
-        {isLoading ? <LoaderCircle className="animate-spin" /> : "Update"}
+        {isSubmitting ? <LoaderCircle className="animate-spin" /> : "Update"}
       </button>
       {statusCode && (
         <Popup
