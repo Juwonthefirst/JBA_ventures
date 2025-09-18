@@ -8,7 +8,7 @@ interface Props {
   extraInit?: RequestInit;
   encType?: "application/json" | "multipart/form-data";
   className?: string;
-  onSubmit: () => undefined | object | Promise<undefined | object>;
+  onSubmit: (() => object | Promise<object>) | (() => void | Promise<void>);
   onSuccess?: (response: Response) => void | Promise<void>;
   onError?: (response: Response | string) => void | Promise<void>;
   children: ReactNode;
@@ -35,26 +35,29 @@ const Form = ({
       className={"flex flex-col gap-6 group " + className}
       onSubmit={(event) => {
         event.preventDefault();
-        const returnValue = onSubmit();
-        if (!returnValue || !url) return;
+        const handleSubmit = async () => {
+          const returnValue = await onSubmit();
+          if (!returnValue || !url) return;
 
-        const body =
-          encType === "multipart/form-data"
-            ? objectToFormData({ data: returnValue })
-            : JSON.stringify(returnValue);
+          const body =
+            encType === "multipart/form-data"
+              ? objectToFormData({ data: returnValue })
+              : JSON.stringify(returnValue);
 
-        if (encType === "application/json")
-          headers["Content-Type"] = "application/json";
+          if (encType === "application/json")
+            headers["Content-Type"] = "application/json";
 
-        void fetchData({
-          url,
-          headers,
-          body,
-          extraInit,
-          method,
-          onSuccess,
-          onError,
-        });
+          void fetchData({
+            url,
+            headers,
+            body,
+            extraInit,
+            method,
+            onSuccess,
+            onError,
+          });
+        };
+        void handleSubmit();
       }}
     >
       {children}
