@@ -33,6 +33,7 @@ const LoginForm = ({ login, error: loginErrorStatus, fetchType }: Prop) => {
           });
 
           if (email && password) login(email, password);
+          return undefined;
         }}
       >
         <InputField

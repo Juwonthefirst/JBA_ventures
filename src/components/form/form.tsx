@@ -8,7 +8,11 @@ interface Props {
   extraInit?: RequestInit;
   encType?: "application/json" | "multipart/form-data";
   className?: string;
-  onSubmit: (() => object | Promise<object>) | (() => void | Promise<void>);
+  onSubmit: () =>
+    | undefined
+    | Record<string, unknown>
+    | Promise<Record<string, unknown>>
+    | Promise<void>;
   onSuccess?: (response: Response) => void | Promise<void>;
   onError?: (response: Response | string) => void | Promise<void>;
   children: ReactNode;
@@ -36,18 +40,22 @@ const Form = ({
       onSubmit={(event) => {
         event.preventDefault();
         const handleSubmit = async () => {
-          const returnValue = await onSubmit();
-          if (!returnValue || !url) return;
+          const returnedValue = onSubmit();
+          const submittedData =
+            returnedValue instanceof Promise
+              ? await returnedValue
+              : returnedValue;
+          if (!submittedData || !url) return;
 
           const body =
             encType === "multipart/form-data"
-              ? objectToFormData({ data: returnValue })
-              : JSON.stringify(returnValue);
+              ? objectToFormData({ data: submittedData })
+              : JSON.stringify(submittedData);
 
           if (encType === "application/json")
             headers["Content-Type"] = "application/json";
 
-          void fetchData({
+          await fetchData({
             url,
             headers,
             body,

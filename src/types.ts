@@ -63,6 +63,6 @@ export type FormDataValues =
   | string[]
   | number
   | number[]
-  | TagType;
+  | { [key: string]: unknown };
 
 export type ServerError = Record<keyof PropertyFormInputs, string[]>;

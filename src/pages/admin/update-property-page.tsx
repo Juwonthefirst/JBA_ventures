@@ -30,9 +30,7 @@ const UpdatePropertyForm = () => {
   const { handleSubmit, control, reset, setError } =
     useForm<PropertyFormInputs>();
   const [retryCount, setRetryCount] = useState(0);
-  const [propertyFetchState, setPropertyFetchState] = useState<
-    "idle" | "fetching" | "fetched"
-  >("fetching");
+  const [isFetching, setIsFetching] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [statusCode, setStatusCode] = useState<number | null>(null);
   const currentPropertyDataRef = useRef<{ [key: string]: FormDataValues }>({});
@@ -162,6 +160,10 @@ const UpdatePropertyForm = () => {
           <StatusCard
             status={statusCode}
             message={statusCode <= 299 ? "Property updated successfully" : ""}
+            withRetry={Object.keys(currentPropertyDataRef).length < 1}
+            onRetry={() => {
+              setRetryCount((currentRetryCount) => currentRetryCount + 1);
+            }}
           />
         </Popup>
       )}
