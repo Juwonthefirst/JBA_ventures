@@ -38,6 +38,7 @@ const FileInputField = ({ children, error, value, ...props }: Props) => {
   return (
     <div>
       <Dropzone
+        className=""
         {...props}
         src={value && [value]}
         onDrop={handleUpload}
@@ -45,7 +46,7 @@ const FileInputField = ({ children, error, value, ...props }: Props) => {
       >
         <DropzoneEmptyState>{children}</DropzoneEmptyState>
         <DropzoneContent>
-          <img className="h-64 w-full object-cover" src={imgSRC} />
+          <img className="h-64 w-full object-cover rounded-md" src={imgSRC} />
         </DropzoneContent>
       </Dropzone>
       {(error || internalError) && (

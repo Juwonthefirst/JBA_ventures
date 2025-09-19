@@ -8,11 +8,7 @@ interface Props {
   extraInit?: RequestInit;
   encType?: "application/json" | "multipart/form-data";
   className?: string;
-  onSubmit: () =>
-    | undefined
-    | Record<string, unknown>
-    | Promise<Record<string, unknown>>
-    | Promise<void>;
+  onSubmit: () => undefined | object | Promise<object> | Promise<void>;
   onSuccess?: (response: Response) => void | Promise<void>;
   onError?: (response: Response | string) => void | Promise<void>;
   children: ReactNode;

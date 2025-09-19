@@ -40,7 +40,7 @@ const MultiFileField = ({ maxSize, onChange, value }: Props) => {
           return (
             <div key={key} className="relative h-full w-24 shrink-0">
               <MediaTag
-                className="absolute top-0 left-0 h-full w-full object-cover"
+                className="absolute top-0 left-0 h-full w-full object-cover rounded-md"
                 src={mediaSRC}
                 controls
                 playsInline
@@ -63,7 +63,6 @@ const MultiFileField = ({ maxSize, onChange, value }: Props) => {
         maxFiles={MAX_FILE_NUMBER}
         disabled={value.length >= MAX_FILE_NUMBER}
         onUpload={handleExtraFileUpload}
-        showPreview={false}
         accept={{ "image/*": [], "video/*": [] }}
         className="static flex flex-row w-fit bg-black text-white dark:bg-white dark:text-black ml-auto"
       >

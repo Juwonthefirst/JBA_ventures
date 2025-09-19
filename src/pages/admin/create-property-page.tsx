@@ -19,14 +19,19 @@ const backendURL = String(import.meta.env.VITE_BACKEND_URL);
 const CreatePropertyForm = () => {
   const { authToken } = useOutletContext<AdminContext>();
   const { control, handleSubmit, reset, setError } =
-    useForm<PropertyFormInputs>();
+    useForm<PropertyFormInputs>({
+      defaultValues: {
+        extra_media: [],
+        benefits: [],
+        tags: {},
+      },
+    });
   const [isLoading, setIsLoading] = useState(false);
   const [statusCode, setStatusCode] = useState<number | null>(null);
 
   const onSubmit = async () => {
-    setIsLoading(true);
     let inputValues: PropertyFormInputs | undefined;
-
+    console.log("submitting");
     const onSubmitSuccess: SubmitHandler<PropertyFormInputs> = (
       submittedData
     ) => {
@@ -34,7 +39,10 @@ const CreatePropertyForm = () => {
     };
     await handleSubmit(onSubmitSuccess)();
 
-    if (!inputValues) return;
+    if (!inputValues) {
+      setIsLoading(false);
+      return;
+    }
 
     return {
       ...inputValues,
@@ -51,7 +59,6 @@ const CreatePropertyForm = () => {
       onSubmit={onSubmit}
       onSuccess={() => {
         setIsLoading(false);
-        //Todo remove response.json after guarantee form works
         // clearCache so new property shows on main admin page
         // clears form inputs
 
@@ -64,6 +71,7 @@ const CreatePropertyForm = () => {
         //show error message
         const errorStatusCode =
           response instanceof Response ? response.status : 600;
+
         if (errorStatusCode === 400 && response instanceof Response) {
           const data = (await response.json()) as ServerError;
           Object.entries(data).forEach(([name, value]) => {
@@ -86,6 +94,9 @@ const CreatePropertyForm = () => {
       <button
         type="submit"
         disabled={isLoading}
+        onClics={() => {
+          setIsLoading(true);
+        }}
         className="bg-black text-white dark:bg-white dark:text-black w-full p-2 text-lg font-medium rounded-lg"
       >
         {isLoading ? <LoaderCircle className="animate-spin" /> : "Create"}

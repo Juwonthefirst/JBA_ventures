@@ -13,14 +13,13 @@ export const TagListSkeleton = () => {
 };
 
 interface Props {
-  tags: string;
+  tags: TagType;
 }
 
 const TagList = ({ tags }: Props) => {
-  const parsedTag = JSON.parse(tags) as TagType;
   return (
     <ul className="flex text-xs gap-2">
-      {Object.entries(parsedTag).map(([type, value]) => (
+      {Object.entries(tags).map(([type, value]) => (
         <li
           key={type}
           className="flex gap-1 items-center p-2 bg-slate-100 rounded-sm dark:bg-zinc-800"

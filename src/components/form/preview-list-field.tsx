@@ -44,7 +44,7 @@ const PreviewList = ({ onChange, value }: Props) => {
         {value.map((item, index) => (
           <li
             key={item + String(index)}
-            className="flex justify-between items-center p-1"
+            className="relative  p-1 w-full truncate"
           >
             {item}
             <button
@@ -52,7 +52,7 @@ const PreviewList = ({ onChange, value }: Props) => {
               onClick={() => {
                 handleRemove(index);
               }}
-              className="text-xs font-medium bg-white/20 p-1 rounded-full"
+              className="absolute right-0 text-xs font-medium bg-white/40 p-1 rounded-full"
             >
               X
             </button>

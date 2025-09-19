@@ -9,7 +9,7 @@ export interface BaseProperty {
   lga: string;
   price: number;
   offer: "Sale" | "Lease" | "Rent";
-  tags: string;
+  tags: TagType;
   id: number;
 }
 
