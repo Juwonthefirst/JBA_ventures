@@ -34,7 +34,7 @@ const UpdatePropertyForm = () => {
   const [statusCode, setStatusCode] = useState<number | null>(null);
   const currentPropertyDataRef = useRef<{ [key: string]: FormDataValues }>({});
 
-  const endpoint = `${backendURL}/api/v1/property/${String(id)}`;
+  const endpoint = `${backendURL}/api/v1/property/${String(id)}/`;
   const onSubmit = async () => {
     setIsSubmitting(true);
     let inputValues:

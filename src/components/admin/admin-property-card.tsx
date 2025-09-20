@@ -2,6 +2,7 @@ import { MapPin, Pen, Trash, LoaderCircle } from "lucide-react";
 import { type BaseProperty } from "@/types.ts";
 import { Skeleton } from "@/components/ui/skeleton.tsx";
 import DeleteConfirmationPopup from "./delete-confirmation-popup.tsx";
+import { Link } from "react-router";
 
 export const PropertySkeleton = () => {
   return (
@@ -25,6 +26,7 @@ const AdminPropertyCard = ({
   description,
   lga,
   state,
+  id,
   onDelete,
   deleting = false,
 }: AdminPropertyCard) => {
@@ -38,12 +40,12 @@ const AdminPropertyCard = ({
           <p className="text-xs">{lga + ", " + state}</p>
 
           <div className="flex gap-3 items-center ml-auto">
-            <button
-              type="button"
+            <Link
+              to={`/admin/${String(id)}`}
               className="transition-all text-yellow-500 active:bg-yellow-500/30 rounded-full p-2"
             >
               <Pen size="18" />
-            </button>
+            </Link>
 
             <DeleteConfirmationPopup
               onConfirm={onDelete}

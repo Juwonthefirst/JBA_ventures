@@ -29,7 +29,10 @@ const MainAdminPage = () => {
       backendURL + "/api/v1/property/",
       searchFilter
     );
-  const [deleteError, setDeleteError] = useState("");
+  const [deleteError, setDeleteError] = useState<{
+    code?: number;
+    message?: string;
+  }>({});
   const [fetchedPropertys, setFetchedPropertys] = useState<PropertyMap>({});
 
   useEffect(() => {
@@ -64,9 +67,11 @@ const MainAdminPage = () => {
       },
       onError: (status, error) => {
         if (status === 400) {
-          JSON.parse(error);
+          const errorobject = JSON.parse(error) as { detail: string };
+          setDeleteError({ code: status, message: errorobject.detail });
+          return;
         }
-        setDeleteError(geterror);
+        setDeleteError({ code: status });
       },
     });
   };
@@ -105,7 +110,21 @@ const MainAdminPage = () => {
         {error && error.status > 299 && (
           <StatusCard status={error.status} onRetry={retry} withRetry />
         )}
-        <Popup open={}></Popup>
+        {deleteError.code && (
+          <Popup
+            open={Boolean(deleteError)}
+            onClose={() => {
+              setDeleteError({});
+            }}
+          >
+            <div className="flex flex-col gap-4">
+              <StatusCard
+                status={deleteError.code}
+                message={deleteError.message}
+              />
+            </div>
+          </Popup>
+        )}
       </main>
     </>
   );

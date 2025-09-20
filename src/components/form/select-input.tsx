@@ -32,7 +32,10 @@ const SelectInput = ({
         {label}
       </label>
       <Select onValueChange={onChange} value={value} name={label + "-select"}>
-        <SelectTrigger className="transition-all bg-slate-200 w-full dark:bg-zinc-800 border-0">
+        <SelectTrigger
+          id={label + "-select"}
+          className="transition-all bg-slate-200 w-full dark:bg-zinc-800 border-0"
+        >
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
         <SelectContent className="bg-white dark:bg-black p-2">
