@@ -1,5 +1,5 @@
 import { Link, useOutletContext } from "react-router";
-import { useState, useRef } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "motion/react";
 
 import StatusCard from "@/components/status-card.tsx";
@@ -18,6 +18,7 @@ import type {
 import { fetchJSON } from "@/helper.ts";
 
 const backendURL = String(import.meta.env.VITE_BACKEND_URL);
+type PropertyMap = { [key: number]: BaseProperty };
 
 const MainAdminPage = () => {
   const { authToken } = useOutletContext<AdminContext>();
@@ -27,31 +28,40 @@ const MainAdminPage = () => {
       backendURL + "/api/v1/property/",
       searchFilter
     );
-  const fetchedDataRef = useRef<{ [key: string]: BaseProperty }>({});
+  const [fetchedPropertys, setFetchedPropertys] = useState<PropertyMap>({});
 
-  if (data) {
-    data.results.forEach((property) => {
-      const key = property.state + String(property.id);
-      fetchedDataRef.current[key] = property;
-    });
-  }
+  useEffect(() => {
+    console.log(data);
+    if (data) {
+      const fetchedData: PropertyMap = {};
+      data.results.forEach((property) => {
+        const key = property.id;
+        fetchedData[key] = property;
+      });
+      setFetchedPropertys((fetchedPropertys) => ({
+        ...fetchedPropertys,
+        ...fetchedData,
+      }));
+    }
+  }, [data]);
 
-  const handleDelete = (id: number, state: string) => {
+  const handleDelete = (id: number) => {
     void fetchJSON({
       url: `${backendURL}/api/v1/property/${String(id)}/`,
       headers: { Authorization: `Bearer ${authToken}` },
       method: "DELETE",
       onSuccess: () => {
+        setFetchedPropertys((fetchedPropertys) => {
+          const { [id]: deletedProperty, ...restOfPropertys } =
+            fetchedPropertys;
+          void deletedProperty;
+          return restOfPropertys;
+        });
+
         clearCache();
-        const key = state + String(id);
-        const { [key]: deletedProperty, ...restOfData } =
-          fetchedDataRef.current;
-        fetchedDataRef.current = restOfData;
-        console.log(deletedProperty);
-        setSearchFilter((searchFilter) => ({ ...searchFilter }));
       },
-      onError: () => {
-        setSearchFilter((searchFilter) => ({ ...searchFilter }));
+      onError: (status, error) => {
+        alert(error);
       },
     });
   };
@@ -70,25 +80,27 @@ const MainAdminPage = () => {
       <h1 className="text-2xl font-semibold p-2 pt-16 dark:text-white">
         Properties
       </h1>
-      <motion.main layout className="flex flex-col p-4 gap-8">
-        {Object.values(fetchedDataRef.current).map((property) => (
-          <PropertyCard
-            key={property.id}
-            {...property}
-            onDelete={() => {
-              handleDelete(property.id, property.state);
-            }}
-          />
-        ))}
+      <main className="p-4">
+        <motion.div layout className="flex flex-col gap-8">
+          {Object.values(fetchedPropertys).map((property) => (
+            <PropertyCard
+              key={property.id}
+              {...property}
+              onDelete={() => {
+                handleDelete(property.id);
+              }}
+            />
+          ))}
+        </motion.div>
 
         {isLoading &&
           [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((number) => (
             <PropertySkeleton key={number} />
           ))}
-        {error && (
+        {error && error.status > 299 && (
           <StatusCard status={error.status} onRetry={retry} withRetry />
         )}
-      </motion.main>
+      </main>
     </>
   );
 };

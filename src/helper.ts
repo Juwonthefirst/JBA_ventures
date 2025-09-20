@@ -33,7 +33,9 @@ export const fetchJSON = async <Type>({
       ...extraInit,
     });
 
-    const data = (await response.json().catch()) as Type;
+    const data = (await response
+      .json()
+      .catch((error: unknown) => void error)) as Type;
     if (!response.ok) {
       void onError?.(response.status, JSON.stringify(data));
       return;
@@ -158,7 +160,7 @@ export const getStatusMessage = (statusCode: number) => {
     case statusCode === 600:
       return "Unable to connect to the server";
     default:
-      return "Something went erong, try again later";
+      return "Something went wrong, try again later";
   }
 };
 

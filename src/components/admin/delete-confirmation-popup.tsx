@@ -21,7 +21,7 @@ const DeleteConfirmationPopup = ({ onConfirm, children, className }: Props) => {
   return (
     <AlertDialog>
       <AlertDialogTrigger className={className}>{children}</AlertDialogTrigger>
-      <AlertDialogContent className="w-3/4 bg-white p-4 rounded-xl dark:text-black dark:bg-white">
+      <AlertDialogContent className="w-3/4 bg-white p-4 rounded-xl dark:text-white dark:bg-black">
         <AlertDialogHeader>
           <AlertDialogTitle>Delete Property</AlertDialogTitle>
         </AlertDialogHeader>

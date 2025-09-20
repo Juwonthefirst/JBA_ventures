@@ -22,7 +22,14 @@ const CreatePropertyForm = () => {
     useForm<PropertyFormInputs>({
       defaultValues: {
         extra_media: [],
+        description: "",
         benefits: [],
+        address: "",
+        state: "",
+        lga: "",
+        price: 0,
+        type: "House",
+        offer: "Sale",
         tags: {},
       },
     });

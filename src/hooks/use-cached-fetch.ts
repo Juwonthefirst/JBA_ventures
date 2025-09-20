@@ -48,7 +48,6 @@ const useCachedFetch = function <Type>(
         error: null,
         isLoading: false,
       });
-      alert("using cache");
       return;
     }
 
