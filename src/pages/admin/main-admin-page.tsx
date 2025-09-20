@@ -37,9 +37,9 @@ const MainAdminPage = () => {
   }
 
   const handleDelete = (id: number, state: string) => {
-    fetchJSON({
-      url: `${backendURL}/api/v1/property/${String(id)}`,
-      headers: { Authorization: authToken },
+    void fetchJSON({
+      url: `${backendURL}/api/v1/property/${String(id)}/`,
+      headers: { Authorization: `Bearer ${authToken}` },
       method: "DELETE",
       onSuccess: () => {
         clearCache();
@@ -50,8 +50,9 @@ const MainAdminPage = () => {
         console.log(deletedProperty);
         setSearchFilter((searchFilter) => ({ ...searchFilter }));
       },
-    }).catch((error: unknown) => {
-      console.error(error);
+      onError: () => {
+        setSearchFilter((searchFilter) => ({ ...searchFilter }));
+      },
     });
   };
 

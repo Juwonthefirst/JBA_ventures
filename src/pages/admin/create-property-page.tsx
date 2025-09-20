@@ -80,7 +80,7 @@ const CreatePropertyForm = () => {
               message: value[0],
             });
           });
-          alert(JSON.stringify(data));
+
           return;
         }
         setStatusCode(errorStatusCode);

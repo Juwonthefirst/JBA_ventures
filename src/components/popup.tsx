@@ -4,24 +4,20 @@ import {
   AlertDialog,
   AlertDialogContent,
   AlertDialogFooter,
-  AlertDialogDescription,
   AlertDialogCancel,
 } from "@/components/ui/alert-dialog.tsx";
 
 interface Props {
-  className?: string;
   open?: boolean;
   onChange?: (open: boolean) => void;
   children: ReactNode;
 }
 
-const Popup = ({ open, children, onChange, className = "" }: Props) => {
+const Popup = ({ open, children, onChange }: Props) => {
   return (
     <AlertDialog open={open} onOpenChange={onChange}>
       <AlertDialogContent className="w-3/4 border-white/30 bg-white dark:bg-black">
-        <AlertDialogDescription className={"p-0 h-fit w-fit" + className}>
-          {children}
-        </AlertDialogDescription>
+        {children}
         <AlertDialogFooter>
           <AlertDialogCancel
             asChild
