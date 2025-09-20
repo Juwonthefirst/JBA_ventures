@@ -16,6 +16,7 @@ import type {
   AdminContext,
 } from "@/types.ts";
 import { fetchJSON } from "@/helper.ts";
+import Popup from "@/components/popup";
 
 const backendURL = String(import.meta.env.VITE_BACKEND_URL);
 type PropertyMap = { [key: number]: BaseProperty };
@@ -28,6 +29,7 @@ const MainAdminPage = () => {
       backendURL + "/api/v1/property/",
       searchFilter
     );
+  const [deleteError, setDeleteError] = useState("");
   const [fetchedPropertys, setFetchedPropertys] = useState<PropertyMap>({});
 
   useEffect(() => {
@@ -61,7 +63,10 @@ const MainAdminPage = () => {
         clearCache();
       },
       onError: (status, error) => {
-        alert(error);
+        if (status === 400) {
+          JSON.parse(error);
+        }
+        setDeleteError(geterror);
       },
     });
   };
@@ -100,6 +105,7 @@ const MainAdminPage = () => {
         {error && error.status > 299 && (
           <StatusCard status={error.status} onRetry={retry} withRetry />
         )}
+        <Popup open={}></Popup>
       </main>
     </>
   );

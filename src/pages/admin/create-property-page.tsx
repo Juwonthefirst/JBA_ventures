@@ -63,7 +63,10 @@ const CreatePropertyForm = () => {
       url={backendURL + "/api/v1/property/"}
       headers={{ Authorization: `Bearer ${authToken}` }}
       encType="multipart/form-data"
-      onSubmit={onSubmit}
+      onSubmit={() => {
+        setIsLoading(true);
+        return onSubmit;
+      }}
       onSuccess={() => {
         setIsLoading(false);
         // clearCache so new property shows on main admin page
@@ -101,9 +104,6 @@ const CreatePropertyForm = () => {
       <button
         type="submit"
         disabled={isLoading}
-        onClics={() => {
-          setIsLoading(true);
-        }}
         className="bg-black text-white dark:bg-white dark:text-black w-full p-2 text-lg font-medium rounded-lg"
       >
         {isLoading ? <LoaderCircle className="animate-spin" /> : "Create"}
@@ -111,7 +111,7 @@ const CreatePropertyForm = () => {
       {statusCode && (
         <Popup
           open={Boolean(statusCode)}
-          onChange={() => {
+          onClose={() => {
             setStatusCode(null);
           }}
         >

@@ -18,7 +18,6 @@ import type {
   FormDataValues,
   Property,
   ServerError,
-  TagType,
 } from "@/types.ts";
 import { clearCache } from "@/hooks/use-cached-fetch.ts";
 import { fetchJSON, urlToFile } from "@/helper.ts";
@@ -81,7 +80,7 @@ const UpdatePropertyForm = () => {
           ...data,
           main_image: mainImageFile,
           extra_media: extraFiles,
-          tags: JSON.parse(data.tags) as TagType,
+          tags: data.tags,
         };
         reset(fetchedFormValues);
         currentPropertyDataRef.current = fetchedFormValues;
@@ -153,7 +152,7 @@ const UpdatePropertyForm = () => {
       {statusCode && (
         <Popup
           open={Boolean(statusCode)}
-          onChange={() => {
+          onClose={() => {
             setStatusCode(null);
           }}
         >
