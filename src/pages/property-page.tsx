@@ -25,7 +25,7 @@ const PropertyPage = () => {
       <div className="flex flex-col md:flex-row md:gap-4 md:items-center dark:text-white">
         <img
           src={data.main_image}
-          className="h-72 md:h-80 object-cover rounded-b-xl mb-4 md:w-2/3"
+          className="h-72 md:h-80 object-cover rounded-b-xl mb-4 md:w-2/5 "
         />
 
         <div className="flex flex-col gap-3 p-4 pt-0">

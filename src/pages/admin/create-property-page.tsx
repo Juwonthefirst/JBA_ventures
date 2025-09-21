@@ -28,8 +28,8 @@ const CreatePropertyForm = () => {
         state: "",
         lga: "",
         price: 0,
-        type: "House",
-        offer: "Sale",
+        type: undefined,
+        offer: undefined,
         tags: {},
       },
     });
@@ -65,7 +65,7 @@ const CreatePropertyForm = () => {
       encType="multipart/form-data"
       onSubmit={() => {
         setIsLoading(true);
-        return onSubmit;
+        return onSubmit();
       }}
       onSuccess={() => {
         setIsLoading(false);
@@ -104,7 +104,7 @@ const CreatePropertyForm = () => {
       <button
         type="submit"
         disabled={isLoading}
-        className="bg-black text-white dark:bg-white dark:text-black w-full p-2 text-lg font-medium rounded-lg"
+        className="flex justify-center items-center bg-black text-white dark:bg-white dark:text-black w-full p-2 text-lg font-medium rounded-lg"
       >
         {isLoading ? <LoaderCircle className="animate-spin" /> : "Create"}
       </button>

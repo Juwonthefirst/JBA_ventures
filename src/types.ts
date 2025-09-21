@@ -8,7 +8,7 @@ export interface BaseProperty {
   state: string;
   lga: string;
   price: number;
-  offer: "Sale" | "Lease" | "Rent";
+  offer: "Sale" | "Lease" | "Rent" | "";
   tags: TagType;
   id: number;
 }
@@ -16,8 +16,8 @@ export interface BaseProperty {
 export interface Property extends BaseProperty {
   address: string;
   benefits: string[];
-  type: "House" | "Shop" | "Land";
-  extra_media: string[];
+  type: "House" | "Shop" | "Land" | "";
+  extra_media: { id: number; media: string }[];
 }
 
 export interface PaginatedBasePropertyResponse {

@@ -72,8 +72,8 @@ const UpdatePropertyForm = () => {
       onSuccess: async (data) => {
         // fetch data then convert the images into File objects to pass into File field
         const mainImageFile = await urlToFile(data.main_image);
-        const arrayOfUrlToFile = data.extra_media.map((fileUrl) =>
-          urlToFile(fileUrl)
+        const arrayOfUrlToFile = data.extra_media.map((file) =>
+          urlToFile(file.media)
         );
         const extraFiles = await Promise.all(arrayOfUrlToFile);
         const fetchedFormValues = {
