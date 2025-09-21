@@ -29,7 +29,8 @@ const MainPage = () => {
   return (
     <>
       <Header setSearchFilter={setSearchFilter} />
-      <main className="flex flex-col p-4 py-16 gap-20 md:grid md:grid-cols-2 lg:grid-cols-3 gap-x-10">
+
+      <main className="flex flex-col p-4 py-16 md:px-16 gap-20 md:grid md:grid-cols-2 lg:grid-cols-3 gap-x-10">
         {Object.values(fetchedDataRef.current).map((property) => (
           <PropertyCard key={property.id} {...property} />
         ))}
