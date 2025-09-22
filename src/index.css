@@ -19,7 +19,7 @@
 }
 
 @theme {
-  --color-accent: var(--color-black);
+  --color-accent: var(--color-green-500);
 }
 
 body {

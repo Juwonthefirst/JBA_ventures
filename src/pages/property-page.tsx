@@ -1,7 +1,7 @@
 import { useParams } from "react-router";
 import { MapPin } from "lucide-react";
-import TagList from "@/components/tag-list.tsx";
-import Skeleton from "@/components/property-page-skeleton.tsx";
+import TagList from "@/components/home/tag-list.tsx";
+import Skeleton from "@/components/home/property-page-skeleton.tsx";
 import useCachedFetch from "@/hooks/use-cached-fetch.ts";
 import { type Property } from "@/types.ts";
 import StatusCard from "@/components/status-card.tsx";
@@ -25,10 +25,10 @@ const PropertyPage = () => {
       <div className="flex flex-col md:flex-row md:gap-4 md:items-center dark:text-white">
         <img
           src={data.main_image}
-          className="h-72 md:h-80 object-cover rounded-b-xl mb-4 md:w-2/5 "
+          className="h-72 md:h-80 object-cover rounded-xl mb-4 md:w-1/2 "
         />
 
-        <div className="flex flex-col gap-3 p-4 pt-0">
+        <div className="flex flex-col gap-3 p-4 pt-0 md:mt-4">
           <h2 className="text-2xl ">₦{data.price}</h2>
           <div className="flex gap-1 text-sm items-center opacity-80">
             <MapPin size="16" className="min-h-4 min-w-4" />

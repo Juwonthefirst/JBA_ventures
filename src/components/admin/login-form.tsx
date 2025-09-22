@@ -1,5 +1,5 @@
-import InputField from "./form/input-field.tsx";
-import Form from "./form/form.tsx";
+import InputField from "../form/input-field.tsx";
+import Form from "../form/form.tsx";
 import { useState } from "react";
 import { LoaderCircle } from "lucide-react";
 import { getStatusMessage } from "@/helper.ts";
