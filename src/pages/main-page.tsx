@@ -14,6 +14,7 @@ import SelectInput from "@/components/form/select-input";
 import StatusCard from "@/components/status-card.tsx";
 import lagosImg from "@/assets/images/lagos.jpg";
 import { propertyTypes } from "@/helper";
+
 const backendURL = String(import.meta.env.VITE_BACKEND_URL);
 
 const MainPage = () => {
@@ -35,72 +36,67 @@ const MainPage = () => {
 
   return (
     <>
-      <main className="flex flex-col gap-18 py-16 px-4">
-        <section className="relative flex h-72 md:h-84 lg:h-96 w-full shadow-lg rounded-xl overflow-hidden">
+      <main className="py-16 px-4">
+        <section className="relative flex w-full shadow-lg ">
           <img
             src={lagosImg}
-            className="absolute -z-10 w-full h-full object-cover "
+            className="w-full h-72 md:h-84 lg:h-96 object-cover rounded-xl"
           />
           <div className="absolute top-0 left-0 flex w-full h-full bg-black/40 items-center justify-center flex-col gap-6 text-white text-center px-4">
             <h2 className="text-2xl font-bold md:text-3xl lg:text-4xl md:w-1/2 mt-4">
               Your reliable partner in the world of real estate
             </h2>
-            <div className=" text-white p-2 rounded-xl mb-4">
-              <div className="relative flex  items-center justify-center p-2 gap-2 caret-accent outline outline-white/20 rounded-xl bg-zinc-900 text-white has-focus:outline-accent has-focus:outline-2 transition-all text-sm md:text-base">
-                <Search size="18" />
-                <input
-                  className="focus:outline-0"
-                  value={searchFilter.search}
-                  onChange={(event) => {
-                    clearTimeout(searchTimeoutID.current);
-                    searchTimeoutID.current = setTimeout(() => {
-                      setSearchFilter((searchFilter) => ({
-                        ...searchFilter,
-                        search: event.target.value,
-                      }));
-                    }, 300);
-                  }}
-                />
-                <button
-                  type="button"
-                  className=""
-                  onClick={() => {
-                    setMenuOpen(!menuOpen);
-                  }}
-                >
-                  <Settings2 />
-                </button>
-                {menuOpen && (
-                  <div className="absolute -bottom-8 right- z-20 grid grid-cols-2 gap-x-4 text-black bg-white shadow-md dark:bg-zinc-900 dark:text-white p-6 transition-all rounded-md">
-                    <SelectInput
-                      placeholder="L.G.A"
-                      className=""
-                      options={lgaJson.Lagos}
-                      required={false}
-                      value={searchFilter.lga}
-                      onChange={(newValue) => {
-                        setSearchFilter({ ...searchFilter, lga: newValue });
-                      }}
-                    />
-
-                    <SelectInput
-                      placeholder="Type"
-                      className=""
-                      options={propertyTypes}
-                      required={false}
-                      value={searchFilter.type}
-                      onChange={(newValue) => {
-                        setSearchFilter({ ...searchFilter, type: newValue });
-                      }}
-                    />
-                  </div>
-                )}
-              </div>
-            </div>
           </div>
         </section>
+        <section className="sticky top-1 z-10 mx-auto -mt-24 mb-36 flex items-center p-2 gap-2 caret-accent outline outline-accent/20 rounded-xl bg-slate-200 dark:bg-zinc-900 dark:text-white has-focus:outline-accent has-focus:outline-2 transition-all text-sm md:text-base scale-80 md:scale-100 w-fit">
+          <Search size="18" />
+          <input
+            className="focus:outline-0"
+            value={searchFilter.search || ""}
+            onChange={(event) => {
+              setSearchFilter((searchFilter) => ({
+                ...searchFilter,
+                search: event.target.value,
+              }));
+            }}
+          />
+          <button
+            type="button"
+            className=""
+            onClick={() => {
+              setMenuOpen(!menuOpen);
+            }}
+          >
+            <Settings2 />
+          </button>
+          {menuOpen && (
+            <div className="absolute -bottom-24 -right-18 z-20 grid grid-cols-2 gap-x-4 text-black bg-white shadow-md dark:bg-black dark:text-white p-6 transition-all rounded-md">
+              <SelectInput
+                placeholder="L.G.A"
+                className=""
+                options={lgaJson.Lagos}
+                required={false}
+                value={searchFilter.lga}
+                onChange={(newValue) => {
+                  setSearchFilter({ ...searchFilter, lga: newValue });
+                }}
+              />
 
-        <section className="flex flex-col items-center gap-20 md:grid md:grid-cols-2 lg:grid-cols-3 gap-x-10 px-6 md:px-16">
+              <SelectInput
+                placeholder="Type"
+                className=""
+                options={propertyTypes}
+                required={false}
+                value={searchFilter.type}
+                onChange={(newValue) => {
+                  setSearchFilter({ ...searchFilter, type: newValue });
+                }}
+              />
+            </div>
+          )}
+        </section>
+
+        <section className="flex flex-col gap-20 md:grid md:grid-cols-2 lg:grid-cols-3 gap-x-12 px-6 md:px-16">
           {Object.values(fetchedDataRef.current).map((property) => (
             <PropertyCard key={property.id} {...property} />
           ))}
