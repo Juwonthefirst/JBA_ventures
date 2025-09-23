@@ -174,3 +174,5 @@ export const getStatusIcon = (statusCode: number) => {
       return RadioTower;
   }
 };
+
+export const propertyTypes = ["House", "Shop", "Land"];

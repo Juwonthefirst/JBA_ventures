@@ -7,10 +7,11 @@ import {
 } from "@/components/ui/select.tsx";
 
 interface Props {
-  value?: string;
   onChange: (newValue: string) => void;
+  value?: string;
+  className?: string;
   required?: boolean;
-  label: string;
+  label?: string;
   error?: string;
   placeholder: string;
   options: string[];
@@ -18,7 +19,8 @@ interface Props {
 
 const SelectInput = ({
   value,
-  label,
+  label = "",
+  className = "",
   placeholder,
   options,
   required = true,
@@ -34,7 +36,11 @@ const SelectInput = ({
       <Select onValueChange={onChange} value={value} name={label + "-select"}>
         <SelectTrigger
           id={label + "-select"}
-          className="transition-all bg-slate-200 w-full dark:bg-zinc-800 border-0"
+          className={
+            "transition-all bg-slate-200 w-full dark:bg-zinc-800 border-0" +
+            " " +
+            className
+          }
         >
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>

@@ -47,7 +47,7 @@ const PropertyCard = ({
         <TagList tags={tags} />
       </Link>
       <div className="flex justify-between items-center text-⁰ mt-4">
-        <p className="text-2xl font-medium ">₦{price}</p>
+        <p className="text-2xl font-medium">₦{price}</p>
       </div>
     </article>
   );
