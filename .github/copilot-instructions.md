@@ -1,6 +1,7 @@
 # Copilot Instructions for JBA_ventures
 
 ## Project Overview
+
 - This is a React + TypeScript project using Vite for fast development and builds.
 - The `src/` directory contains all source code, organized by feature and UI domain.
 - Major UI components are grouped under `src/components/`, with further subfolders for admin, forms, header, home, and UI primitives.
@@ -9,6 +10,7 @@
 - Static assets (images, fonts, data) are under `src/assets/`.
 
 ## Key Patterns & Conventions
+
 - **Component Structure:**
   - Use function components with TypeScript (`.tsx`).
   - Co-locate related files (e.g., form fields, admin property forms) in feature folders.
@@ -25,6 +27,7 @@
   - Main user-facing pages are in `src/pages/`.
 
 ## Developer Workflows
+
 - **Build:** Use Vite (`vite.config.ts`).
 - **Type Checking:** Run `tsc` (uses `tsconfig.json`, `tsconfig.app.json`).
 - **Linting:** Configured via `eslint.config.js`.
@@ -32,14 +35,17 @@
 - **Routing:** Managed in `src/router.ts`.
 
 ## Integration & External Dependencies
+
 - Uses Vite, React, TypeScript, and likely shadcn/ui for UI primitives (see `src/components/ui/shadcn-io/`).
 - Static assets are referenced directly from `public/` and `src/assets/`.
 
 ## Examples
+
 - To add a new admin form section: create a new `.tsx` file in `src/components/admin/property-form/` and import it in the relevant parent form.
 - To add a new page: create a `.tsx` file in `src/pages/` and update `src/router.ts`.
 
 ## Tips for AI Agents
+
 - Prefer TypeScript for all new code.
 - Follow the existing folder structure for new features/components.
 - Reference `src/components/ui/` for reusable UI patterns.
