@@ -1,38 +1,38 @@
-import { useState, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Search, Settings2 } from "lucide-react";
 import lgaJson from "@/assets/data/lgas.json";
 import PropertyCard, {
   PropertySkeleton,
 } from "@/components/home/property-card";
-import type {
-  ParamsType,
-  BaseProperty,
-  PaginatedBasePropertyResponse,
-} from "@/types.ts";
-import useCachedFetch from "@/hooks/use-cached-fetch.ts";
+import type { ParamsType, BaseProperty } from "@/types.ts";
+import usePaginatedFetch from "@/hooks/use-paginated-fetch";
 import SelectInput from "@/components/form/select-input";
 import StatusCard from "@/components/status-card.tsx";
 import lagosImg from "@/assets/images/lagos.jpg";
-import { propertyTypes } from "@/helper";
+import { propertyTypes, watchElementIntersecting } from "@/helper";
 
 const backendURL = String(import.meta.env.VITE_BACKEND_URL);
 
 const MainPage = () => {
   const [searchFilter, setSearchFilter] = useState<ParamsType>({});
   const [menuOpen, setMenuOpen] = useState(false);
-  const { data, error, isLoading, retry } =
-    useCachedFetch<PaginatedBasePropertyResponse>(
+  const [pageNumber, setPageNumber] = useState(1);
+  const { data, error, isLoading, retry, hasEnded } =
+    usePaginatedFetch<BaseProperty>(
       backendURL + "/api/v1/property/",
+      pageNumber,
       searchFilter
     );
+  const scrollElementRef = useRef<HTMLDivElement | null>(null);
   const searchTimeoutID = useRef<NodeJS.Timeout | undefined>(undefined);
   const fetchedDataRef = useRef<{ [key: string]: BaseProperty }>({});
-  if (data) {
-    data.results.forEach((property) => {
-      const key = property.state + String(property.id);
-      fetchedDataRef.current[key] = property;
-    });
-  }
+
+  useEffect(() => {
+    const observer = watchElementIntersecting(
+      scrollElementRef.current?.children
+    );
+    return () => observer?.disconnect();
+  }, []);
 
   return (
     <>
@@ -96,8 +96,11 @@ const MainPage = () => {
           )}
         </section>
 
-        <section className="flex flex-col gap-20 md:grid md:grid-cols-2 lg:grid-cols-3 gap-x-12 px-6 md:px-16">
-          {Object.values(fetchedDataRef.current).map((property) => (
+        <section
+          ref={scrollElementRef}
+          className="flex flex-col gap-20 md:grid md:grid-cols-2 lg:grid-cols-3 gap-x-12 px-6 md:px-16"
+        >
+          {data.map((property) => (
             <PropertyCard key={property.id} {...property} />
           ))}
 

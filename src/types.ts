@@ -1,5 +1,6 @@
 export interface ParamsType {
   [key: string]: string;
+  page: string;
 }
 
 export interface BaseProperty {
@@ -20,11 +21,11 @@ export interface Property extends BaseProperty {
   extra_media: { id: number; media: string }[];
 }
 
-export interface PaginatedBasePropertyResponse {
+export interface PaginatedResponse<Type> {
   count: number;
   next: string;
   prev: string;
-  results: BaseProperty[];
+  results: Type[];
 }
 
 export interface AuthStateType {
