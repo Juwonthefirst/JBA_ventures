@@ -37,10 +37,10 @@ const MainPage = () => {
   return (
     <>
       <main className="py-16 px-4">
-        <section className="relative flex w-full shadow-lg ">
+        <section className="relative flex w-full shadow-lg rounded-xl overflow-hidden">
           <img
             src={lagosImg}
-            className="w-full h-72 md:h-84 lg:h-96 object-cover rounded-xl"
+            className="w-full h-72 md:h-84 lg:h-96 object-cover "
           />
           <div className="absolute top-0 left-0 flex w-full h-full bg-black/40 items-center justify-center flex-col gap-6 text-white text-center px-4">
             <h2 className="text-2xl font-bold md:text-3xl lg:text-4xl md:w-1/2 mt-4">
@@ -48,7 +48,7 @@ const MainPage = () => {
             </h2>
           </div>
         </section>
-        <section className="sticky top-1 z-10 mx-auto -mt-24 mb-36 flex items-center p-2 gap-2 caret-accent outline outline-accent/20 rounded-xl bg-slate-200 dark:bg-zinc-900 dark:text-white has-focus:outline-accent has-focus:outline-2 transition-all text-sm md:text-base scale-80 md:scale-100 w-fit">
+        <section className="sticky w-fit top-1 z-10 mx-auto -mt-24 mb-36 flex shrink grow-0 items-center p-2 gap-2 caret-accent outline outline-accent/20 rounded-xl bg-slate-200 dark:bg-zinc-800 dark:text-white has-focus:outline-accent has-focus:outline-2 transition-all text-sm md:text-base scale-85 md:scale-100">
           <Search size="18" />
           <input
             className="focus:outline-0"

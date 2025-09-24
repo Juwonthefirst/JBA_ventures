@@ -91,7 +91,10 @@ const MainAdminPage = () => {
         Properties
       </h1>
       <main className="p-4">
-        <motion.div layout className="flex flex-col gap-8">
+        <motion.div
+          layout
+          className="flex flex-col md:grid grid-cols-2 gap-x-4 gap-8"
+        >
           {Object.values(fetchedPropertys).map((property) => (
             <PropertyCard
               key={property.id}
