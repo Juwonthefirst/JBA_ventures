@@ -38,7 +38,7 @@ const CreatePropertyForm = () => {
 
   const onSubmit = async () => {
     let inputValues: PropertyFormInputs | undefined;
-    console.log("submitting");
+
     const onSubmitSuccess: SubmitHandler<PropertyFormInputs> = (
       submittedData
     ) => {

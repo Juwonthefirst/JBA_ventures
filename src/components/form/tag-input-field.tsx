@@ -38,7 +38,7 @@ const TagInputField = ({ onChange, value }: TagInputFieldProps) => {
 
   const handleDelete = (removedTag: string) => {
     const { [removedTag]: removedTagObject, ...updatedSelectedTag } = value;
-    console.log(removedTagObject);
+    void removedTagObject;
     onChange?.(updatedSelectedTag);
   };
 

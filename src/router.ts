@@ -1,7 +1,7 @@
 import { createBrowserRouter } from "react-router";
 import MainPage from "./pages/main-page.tsx";
 import PropertyPage from "./pages/property-page.tsx";
-import BaseAdminPage from "./pages/admin/base-admin-page.tsx";
+import BaseAdminLayout from "./pages/admin/base-admin-layout.tsx";
 import MainAdminPage from "./pages/admin/main-admin-page.tsx";
 import CreatePropertyPage from "./pages/admin/create-property-page.tsx";
 import UpdatePropertyPage from "./pages/admin/update-property-page.tsx";
@@ -24,7 +24,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/admin",
-    Component: BaseAdminPage,
+    Component: BaseAdminLayout,
     children: [
       { index: true, Component: MainAdminPage },
       { path: "/admin/add", Component: CreatePropertyPage },

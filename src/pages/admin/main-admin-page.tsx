@@ -36,7 +36,6 @@ const MainAdminPage = () => {
   const [fetchedPropertys, setFetchedPropertys] = useState<PropertyMap>({});
 
   useEffect(() => {
-    console.log(data);
     if (data) {
       const fetchedData: PropertyMap = {};
       data.results.forEach((property) => {
@@ -104,12 +103,12 @@ const MainAdminPage = () => {
               }}
             />
           ))}
+          {isLoading &&
+            [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((number) => (
+              <PropertySkeleton key={number} />
+            ))}
         </motion.div>
 
-        {isLoading &&
-          [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((number) => (
-            <PropertySkeleton key={number} />
-          ))}
         {error && error.status > 299 && (
           <StatusCard status={error.status} onRetry={retry} withRetry />
         )}

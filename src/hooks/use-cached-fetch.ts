@@ -53,7 +53,7 @@ const useCachedFetch = function <Type>(
 
     setState((state) => ({ ...state, isLoading: true }));
     const controller = new AbortController();
-    fetchJSON<Type>({
+    void fetchJSON<Type>({
       url: urlAndParams,
       extraInit: { signal: controller.signal },
       onSuccess: (data) => {
@@ -71,8 +71,6 @@ const useCachedFetch = function <Type>(
           isLoading: false,
         });
       },
-    }).catch((error: unknown) => {
-      console.error(error);
     });
 
     return () => {
