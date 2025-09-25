@@ -10,6 +10,7 @@ import SelectInput from "@/components/form/select-input";
 import StatusCard from "@/components/status-card.tsx";
 import lagosImg from "@/assets/images/lagos.jpg";
 import { propertyTypes, watchElementIntersecting } from "@/helper";
+import { motion } from "motion/react";
 
 const backendURL = String(import.meta.env.VITE_BACKEND_URL);
 
@@ -39,7 +40,7 @@ const MainPage = () => {
 
   return (
     <>
-      <main className="py-16 px-4">
+      <main className="py-16 px-4 /dark:bg-zinc-900">
         <section className="relative flex w-full shadow-lg rounded-xl overflow-hidden">
           <img
             src={lagosImg}
@@ -51,11 +52,12 @@ const MainPage = () => {
             </h2>
           </div>
         </section>
-        <section className="sticky top-1 z-10 mx-auto -mt-24 mb-36 flex shrink-2 grow-0 *:grow-0 *:shrink justify-center items-center p-2 gap-2 caret-accent outline outline-accent/20 rounded-xl bg-slate-200 dark:bg-zinc-800 dark:text-white has-focus:outline-accent has-focus:outline-2 transition-all text-sm md:text-base w-3/5 lg:w-fit">
-          <Search size="18" />
+        <section className="group **:text-black dark:**:text-white sticky top-1 z-10 mx-auto -mt-24 mb-36 flex shrink-2 grow-0 *:grow-0 *:shrink justify-center items-center p-2 gap-2 caret-accent outline outline-accent/20 rounded-xl bg-slate-200 dark:bg-zinc-800 has-focus:outline-accent has-focus:outline-2 transition-all text-sm md:text-base w-3/5 lg:w-fit">
+          <Search size="18" className="group-has-focus:*:text-accent" />
           <input
             name="search-input"
-            className="focus:outline-0 w-2/3 lg:w-fit"
+            placeholder="Search for propertys"
+            className="focus:outline-0 w-2/3 lg:w-fit placeholder:italic placeholder:opacity-90"
             value={searchFilter.search || ""}
             onChange={(event) => {
               setSearchFilter((searchFilter) => ({
@@ -64,15 +66,19 @@ const MainPage = () => {
               }));
             }}
           />
-          <button
+          <motion.button
             type="button"
-            className=""
+            className="hover:*:text-accent hover:*:scale-110"
+            animate={{
+              rotate: menuOpen ? 90 : undefined,
+              color: menuOpen ? "var(--color-green-500)" : undefined,
+            }}
             onClick={() => {
               setMenuOpen(!menuOpen);
             }}
           >
             <Settings2 />
-          </button>
+          </motion.button>
           {menuOpen && (
             <div className="absolute -bottom-24 -right-18 z-20 grid grid-cols-2 gap-x-4 text-black bg-white shadow-md dark:bg-black dark:text-white p-6 transition-all rounded-md">
               <SelectInput

@@ -28,17 +28,17 @@ const PropertyPage = () => {
           className="h-72 md:h-80 object-cover rounded-xl mb-4 md:w-1/2 "
         />
 
-        <div className="flex flex-col gap-3 p-4 pt-0 md:mt-4">
+        <div className="flex flex-col gap-4 p-4 pt-0 md:mt-4">
           <h2 className="text-2xl ">₦{data.price}</h2>
           <div className="flex gap-1 text-sm items-center opacity-80">
             <MapPin size="16" className="min-h-4 min-w-4" />
             <p>{`${data.address}, ${data.lga}, ${data.state}`}</p>
           </div>
           <TagList tags={data.tags} />
-          <div className="mt-4">
+          <div className="mt-8">
             <h2 className="text-lg font-medium">Description:</h2>
             <p className="leading-relaxed text-sm">{data.description}</p>
-            <h2 className="text-lg mt-6 font-medium">
+            <h2 className="text-md mt-6 font-medium">
               This property includes:
             </h2>
             <ul className="list-disc list-inside text-sm space-y-1 p-2">

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import type { PaginatedResponse, ParamsType } from "../types.ts";
 import { fetchJSON } from "@/helper.ts";
 
@@ -25,14 +25,14 @@ const usePaginatedFetch = function <Type>(
     error: null,
     isLoading: true,
   });
-  const previousUrl = useRef("");
+  const [previousUrl, setPreviousUrl] = useState("");
   const urlAndParams =
     url +
     "?" +
     new URLSearchParams(params as Record<string, string>).toString();
 
   useEffect(() => {
-    if (hasEnded && previousUrl.current === urlAndParams) return;
+    if (hasEnded && previousUrl === urlAndParams) return;
     setState((state) => ({ ...state, isLoading: true }));
     const controller = new AbortController();
     void fetchJSON<PaginatedResponse<Type>>({
@@ -41,7 +41,8 @@ const usePaginatedFetch = function <Type>(
       onSuccess: (data) => {
         setState((currentState) => {
           const fetchedData =
-            previousUrl.current === urlAndParams ? currentState.data : [];
+            previousUrl === urlAndParams ? currentState.data : [];
+
           return {
             data: [...fetchedData, ...data.results],
             error: null,
@@ -49,7 +50,7 @@ const usePaginatedFetch = function <Type>(
           };
         });
         setHasEnded(!data.next);
-        previousUrl.current = urlAndParams;
+        setPreviousUrl(urlAndParams);
       },
       onError: (status, error) => {
         setState((state) => ({
@@ -63,7 +64,7 @@ const usePaginatedFetch = function <Type>(
     return () => {
       controller.abort();
     };
-  }, [urlAndParams, page, retryCount, hasEnded]);
+  }, [urlAndParams, page, retryCount, hasEnded, previousUrl]);
 
   const retry = () => {
     setRetryCount((retryCount) => retryCount + 1);
