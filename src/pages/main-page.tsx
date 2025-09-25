@@ -24,16 +24,14 @@ const MainPage = () => {
       searchFilter
     );
   const intersectingElement = useRef<HTMLElement | null>(null);
-  const searchTimeoutID = useRef<NodeJS.Timeout | undefined>(undefined);
 
   useEffect(() => {
     const observer = watchElementIntersecting(
       intersectingElement.current,
       () => {
+        console.log("intersecting");
         if (isLoading || hasEnded) return;
-        console.log("hello");
-
-        //setPageNumber((currentPageNumber) => currentPageNumber++);
+        setPageNumber((currentPageNumber) => currentPageNumber++);
       }
     );
     return () => observer?.disconnect();
