@@ -22,7 +22,7 @@ const TagList = ({ tags }: Props) => {
       {Object.entries(tags).map(([type, value]) => (
         <li
           key={type}
-          className="flex gap-1 items-center p-2 bg-slate-100 rounded-sm dark:bg-zinc-800"
+          className="flex gap-1 items-center p-2 bg-slate-200 rounded-sm dark:bg-zinc-800"
         >
           <Icon type={type} size="14" />
           <p>{value}</p>

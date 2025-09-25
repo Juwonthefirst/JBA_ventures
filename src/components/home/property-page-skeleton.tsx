@@ -5,7 +5,7 @@ const PropertyPageSkeleton = () => {
   return (
     <div className="flex flex-col md:flex-row md:gap-4 md:items-center">
       <Skeleton className="h-72 md:w-80 mb-4 md:w-2/3" />
-      <div className="flex flex-col gap-3 p-4 pt-0">
+      <div className="flex flex-col gap-3 p-4 pt-4">
         <Skeleton className="h-8 w-1/2" />
         <Skeleton className="h-6" />
         <TagListSkeleton />

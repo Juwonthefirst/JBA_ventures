@@ -8,7 +8,7 @@ import TagList, { TagListSkeleton } from "@/components/home/tag-list";
 export const PropertySkeleton = () => {
   return (
     <div className="flex flex-col gap-2">
-      <Skeleton className="h-72 w-full" />
+      <Skeleton className="h-64 md:h-52 w-full" />
       <Skeleton className="h-8 w-full" />
       <Skeleton className="h-5 w-1/2" />
       <TagListSkeleton />
@@ -51,7 +51,7 @@ const PropertyCard = ({
         </div>
         <TagList tags={tags} />
       </Link>
-      <div className="flex justify-between items-center text-⁰ mt-4">
+      <div className="flex justify-between items-center mt-4">
         <p className="text-2xl font-medium">₦{price}</p>
       </div>
     </article>
