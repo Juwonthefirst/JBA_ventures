@@ -32,11 +32,10 @@ const usePaginatedFetch = function <Type>(
     new URLSearchParams(params as Record<string, string>).toString();
 
   useEffect(() => {
-    if (hasEnded) return;
     setState((state) => ({ ...state, isLoading: true }));
     const controller = new AbortController();
     void fetchJSON<PaginatedResponse<Type>>({
-      url: urlAndParams + `page=${String(page)}`,
+      url: urlAndParams + `&page=${String(page)}`,
       extraInit: { signal: controller.signal },
       onSuccess: (data) => {
         setState((currentState) => {
@@ -48,7 +47,7 @@ const usePaginatedFetch = function <Type>(
             isLoading: false,
           };
         });
-        if (data.next) setHasEnded(true);
+        setHasEnded(Boolean(data.next));
         previousUrl.current = urlAndParams;
       },
       onError: (status, error) => {

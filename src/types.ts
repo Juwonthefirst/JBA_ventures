@@ -1,6 +1,5 @@
 export interface ParamsType {
   [key: string]: string;
-  page: string;
 }
 
 export interface BaseProperty {

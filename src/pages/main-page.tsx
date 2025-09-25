@@ -23,16 +23,21 @@ const MainPage = () => {
       pageNumber,
       searchFilter
     );
-  const scrollElementRef = useRef<HTMLDivElement | null>(null);
+  const intersectingElement = useRef<HTMLElement | null>(null);
   const searchTimeoutID = useRef<NodeJS.Timeout | undefined>(undefined);
-  const fetchedDataRef = useRef<{ [key: string]: BaseProperty }>({});
 
   useEffect(() => {
     const observer = watchElementIntersecting(
-      scrollElementRef.current?.children
+      intersectingElement.current,
+      () => {
+        if (isLoading || hasEnded) return;
+        console.log("hello");
+
+        //setPageNumber((currentPageNumber) => currentPageNumber++);
+      }
     );
     return () => observer?.disconnect();
-  }, []);
+  }, [isLoading, hasEnded]);
 
   return (
     <>
@@ -48,10 +53,11 @@ const MainPage = () => {
             </h2>
           </div>
         </section>
-        <section className="sticky w-fit top-1 z-10 mx-auto -mt-24 mb-36 flex shrink grow-0 items-center p-2 gap-2 caret-accent outline outline-accent/20 rounded-xl bg-slate-200 dark:bg-zinc-800 dark:text-white has-focus:outline-accent has-focus:outline-2 transition-all text-sm md:text-base scale-85 md:scale-100">
+        <section className="sticky top-1 z-10 mx-auto -mt-24 mb-36 flex shrink-2 grow-0 *:grow-0 *:shrink justify-center items-center p-2 gap-2 caret-accent outline outline-accent/20 rounded-xl bg-slate-200 dark:bg-zinc-800 dark:text-white has-focus:outline-accent has-focus:outline-2 transition-all text-sm md:text-base w-3/5 lg:w-fit">
           <Search size="18" />
           <input
-            className="focus:outline-0"
+            name="search-input"
+            className="focus:outline-0 w-2/3 lg:w-fit"
             value={searchFilter.search || ""}
             onChange={(event) => {
               setSearchFilter((searchFilter) => ({
@@ -96,12 +102,13 @@ const MainPage = () => {
           )}
         </section>
 
-        <section
-          ref={scrollElementRef}
-          className="flex flex-col gap-20 md:grid md:grid-cols-2 lg:grid-cols-3 gap-x-12 px-6 md:px-16"
-        >
-          {data.map((property) => (
-            <PropertyCard key={property.id} {...property} />
+        <section className="flex flex-col gap-20 sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-x-12 px-6 md:px-16">
+          {data.map((property, index) => (
+            <PropertyCard
+              key={property.id}
+              {...property}
+              ref={data.length - 5 === index ? intersectingElement : undefined}
+            />
           ))}
 
           {isLoading &&

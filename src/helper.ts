@@ -178,7 +178,7 @@ export const getStatusIcon = (statusCode: number) => {
 export const propertyTypes = ["House", "Shop", "Land"];
 
 export const watchElementIntersecting = (
-  target: HTMLElement | undefined,
+  target: HTMLElement | null,
   onIntersecting: () => void
 ) => {
   if (!target) return;

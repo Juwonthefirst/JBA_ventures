@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 import { MapPin, Tag } from "lucide-react";
+import { type RefObject } from "react";
 import { type BaseProperty } from "@/types.ts";
 import { Skeleton } from "@/components/ui/skeleton.tsx";
 import TagList, { TagListSkeleton } from "@/components/home/tag-list";
@@ -25,9 +26,13 @@ const PropertyCard = ({
   description,
   state,
   lga,
-}: BaseProperty) => {
+  ref,
+}: BaseProperty & { ref?: RefObject<HTMLElement | null> }) => {
   return (
-    <article className="flex flex-col gap-2 transition-all dark:text-white md:max-h-1/2 hover:scale-110  group">
+    <article
+      ref={ref}
+      className="flex flex-col gap-2 transition-all dark:text-white md:max-h-1/2 hover:scale-110  group"
+    >
       <div className="relative">
         <img
           className="rounded-lg h-64 md:h-52  object-cover w-full group-hover:shadow-lg"
