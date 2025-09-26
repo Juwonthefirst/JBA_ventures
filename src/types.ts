@@ -52,8 +52,8 @@ export interface PropertyFormInputs {
   lga: string;
   tags: TagType;
   price: number;
-  type: "House" | "Shop" | "Land";
-  offer: "Sale" | "Lease" | "Rent";
+  type: "House" | "Shop" | "Land" | "";
+  offer: "Sale" | "Lease" | "Rent" | "";
 }
 
 export type FormDataValues =
