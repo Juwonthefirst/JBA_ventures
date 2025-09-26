@@ -52,7 +52,7 @@ const MainPage = () => {
             </h2>
           </div>
         </section>
-        <section className="group **:text-black dark:**:text-white sticky top-2 z-10 mx-auto -mt-24 mb-36 flex  justify-center items-center p-2 gap-2 caret-accent outline outline-white/20 rounded-xl bg-slate-200 dark:bg-zinc-700 has-focus:outline-accent has-focus:outline-2 transition-all text-sm md:text-base w-2/3 lg:w-fit">
+        <section className="group **:text-black dark:**:text-white sticky top-2 z-10 mx-auto -mt-24 mb-36 flex  justify-center items-center p-2 gap-2 caret-accent outline outline-white/20 rounded-xl bg-slate-200 dark:bg-zinc-900 has-focus:outline-accent has-focus:outline-2 transition-all text-sm md:text-base w-2/3 lg:w-fit">
           <Search size="18" className="group-has-focus:*:text-accent" />
           <input
             name="search-input"
@@ -68,16 +68,15 @@ const MainPage = () => {
           />
           <motion.button
             type="button"
-            className="hover:*:text-accent hover:*:scale-110"
+            className=" hover:*:scale-110"
             animate={{
               rotate: menuOpen ? 90 : undefined,
-              color: menuOpen ? "var(--color-green-500)" : undefined,
             }}
             onClick={() => {
               setMenuOpen(!menuOpen);
             }}
           >
-            <Settings2 />
+            <Settings2 className="group-has-focus:*:text-accent" />
           </motion.button>
           {menuOpen && (
             <div className="absolute -bottom-24 -right-18 z-20 grid grid-cols-2 gap-x-4 text-black bg-white shadow-md dark:bg-black dark:text-white p-6 transition-all rounded-md">
@@ -106,7 +105,7 @@ const MainPage = () => {
           )}
         </section>
 
-        <section className="flex flex-col gap-20 sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-x-12 px-6 md:px-16">
+        <section className="flex flex-col gap-20 sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-x-16 px-6 md:px-16">
           {data.map((property, index) => (
             <PropertyCard
               key={property.id}

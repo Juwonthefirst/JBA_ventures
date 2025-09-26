@@ -11,6 +11,7 @@ interface StateType<Type> {
 interface ReturnType<Type> extends StateType<Type> {
   hasEnded: boolean;
   retry: () => void;
+  mutateData: (callback: (data: Type[]) => Type[]) => void;
 }
 
 const usePaginatedFetch = function <Type>(
@@ -70,7 +71,12 @@ const usePaginatedFetch = function <Type>(
     setRetryCount((retryCount) => retryCount + 1);
   };
 
-  return { ...state, hasEnded, retry };
+  const mutateData = (callback: (data: Type[]) => Type[]) => {
+    const returnedValue = callback(state.data);
+    setState((currentState) => ({ ...currentState, data: [...returnedValue] }));
+  };
+
+  return { ...state, hasEnded, retry, mutateData };
 };
 
 export default usePaginatedFetch;

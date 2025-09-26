@@ -9,7 +9,7 @@ interface Props {
 
 const Header = ({ setSearchFilter }: Props) => {
   return (
-    <header className="flex py-2 px-4 fixed top-0 left-0 z-10 items-center justify-end w-full bg-white dark:bg-black">
+    <header className="flex py-2 px-4 fixed top-0 left-0 z-10 items-center justify-end w-full bg-white dark:bg-zinc-900">
       <div className="flex gap-4 items-center dark:text-white">
         <SearchBox setSearchFilter={setSearchFilter} />
         <button

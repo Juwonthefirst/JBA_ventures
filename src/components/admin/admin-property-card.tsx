@@ -3,6 +3,7 @@ import { type BaseProperty } from "@/types.ts";
 import { Skeleton } from "@/components/ui/skeleton.tsx";
 import DeleteConfirmationPopup from "./delete-confirmation-popup.tsx";
 import { Link } from "react-router";
+import type { RefObject } from "react";
 
 export const PropertySkeleton = () => {
   return (
@@ -17,11 +18,13 @@ export const PropertySkeleton = () => {
 };
 
 interface AdminPropertyCard extends BaseProperty {
+  ref?: RefObject<HTMLDivElement | null>;
   deleting?: boolean;
   onDelete: () => void;
 }
 
 const AdminPropertyCard = ({
+  ref,
   main_image,
   description,
   lga,
@@ -31,7 +34,10 @@ const AdminPropertyCard = ({
   deleting = false,
 }: AdminPropertyCard) => {
   return (
-    <div className="flex gap-2 items-center rounded-lg p-2 bg-slate-100 dark:text-white dark:bg-black">
+    <div
+      ref={ref}
+      className="flex gap-2 items-center rounded-lg p-2 bg-slate-100 dark:text-white dark:bg-black"
+    >
       <img src={main_image} className="object-cover w-16 h-16 rounded-lg" />
       <div className="flex flex-col gap-1.5 relative w-full">
         <h2 className="line-clamp-1">{description}</h2>
