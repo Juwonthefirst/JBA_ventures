@@ -63,6 +63,7 @@ export type FormDataValues =
   | string[]
   | number
   | number[]
-  | { [key: string]: unknown };
+  | { [key: string]: FormDataValues };
 
+export type FormDataObject = { [key: string]: FormDataValues };
 export type ServerError = Record<keyof PropertyFormInputs, string[]>;

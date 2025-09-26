@@ -1,5 +1,6 @@
 import { type ReactNode } from "react";
 import { objectToFormData, fetchData } from "@/helper.ts";
+import type { FormDataObject } from "@/types";
 
 interface Props {
   url?: string;
@@ -8,7 +9,11 @@ interface Props {
   extraInit?: RequestInit;
   encType?: "application/json" | "multipart/form-data";
   className?: string;
-  onSubmit: () => undefined | object | Promise<object> | Promise<void>;
+  onSubmit: () =>
+    | undefined
+    | FormDataObject
+    | Promise<FormDataObject | undefined>;
+
   onSuccess?: (response: Response) => void | Promise<void>;
   onError?: (response: Response | string) => void | Promise<void>;
   children: ReactNode;

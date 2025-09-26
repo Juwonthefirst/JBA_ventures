@@ -18,6 +18,7 @@ import type {
   FormDataValues,
   Property,
   ServerError,
+  FormDataObject,
 } from "@/types.ts";
 import { clearCache } from "@/hooks/use-cached-fetch.ts";
 import { fetchJSON, urlToFile } from "@/helper.ts";
@@ -32,7 +33,7 @@ const UpdatePropertyForm = () => {
   const [isFetching, setIsFetching] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [statusCode, setStatusCode] = useState<number | null>(null);
-  const currentPropertyDataRef = useRef<{ [key: string]: FormDataValues }>({});
+  const currentPropertyDataRef = useRef<FormDataObject>({});
 
   const endpoint = `${backendURL}/api/v1/property/${String(id)}/`;
   const onSubmit = async () => {
@@ -50,7 +51,7 @@ const UpdatePropertyForm = () => {
 
     if (!inputValues) return;
 
-    const updatedFields: { [key: string]: FormDataValues } = {};
+    const updatedFields: FormDataObject = {};
     // looks for updated fields by comparing them to their initial value
     Object.entries(inputValues).forEach(([key, value]) => {
       if (key === "extra_media") {

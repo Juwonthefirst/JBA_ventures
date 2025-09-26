@@ -1,4 +1,5 @@
 import { XCircle, CheckCircle, RadioTower } from "lucide-react";
+import type { FormDataObject } from "./types";
 
 interface FetchJson<Type> {
   url: string;
@@ -48,9 +49,7 @@ export const fetchJSON = async <Type>({
 };
 
 interface ObjectToFormDataPara {
-  data: {
-    [key: string]: string | number | Blob | string[] | number[] | Blob[];
-  };
+  data: FormDataObject;
   formData?: FormData;
   namespace?: string;
 }
