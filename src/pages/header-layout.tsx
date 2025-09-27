@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from "react";
 import { Menu, X } from "lucide-react";
 import { Link, Outlet, useLocation } from "react-router";
 import { motion } from "motion/react";
+//import lightLogo from "@/assets/images/light-logo.png";
+//import darkLogo from "@/assets/images/dark-logo.png";
 
 const NavBar = ({ className = "" }) => {
   const currentLocation = useLocation();
@@ -39,7 +41,7 @@ const Header = () => {
   }, [IsMenuOpened]);
   return (
     <header className="flex py-2 px-4 md:px-12 md:py-3 fixed top-0 left-0 z-10 items-center justify-between w-full bg-white dark:bg-black">
-      <h1 className="text-xl font-semibold italic">JBA</h1>
+      <h1 className="text-xl font-semibold italic text-accent">JBA</h1>
       <NavBar className="text-sm gap-8 lg:mr-12 *:data-[iscurrent=false]:hover:opacity-100 *:data-[iscurrent=false]:hover:scale-105 hidden md:flex" />
       <button
         type="button"
