@@ -24,7 +24,7 @@ const SlideInDialog = ({ open, onClose, children, menuBtn }: Props) => {
       ref={menuDialogRef}
       initial={{ x: 1200 }}
       animate={{ x: 0 }}
-      className="h-screen flex flex-col gap-4 justify-self-end w-54 bg-white text-black dark:bg-black dark:text-white shadow-xl p-4"
+      className="h-screen flex flex-col gap-4 justify-self-end w-54 md:w-72 bg-white text-black dark:bg-black dark:text-white shadow-xl p-4"
     >
       <div className="flex gap-3 items-center justify-end">
         <button type="button" className="" onClick={onClose}>

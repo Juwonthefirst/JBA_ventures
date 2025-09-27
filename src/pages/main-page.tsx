@@ -50,7 +50,7 @@ const MainPage = () => {
           </div>
         </section>
         <Search
-          className="group **:text-black dark:**:text-white sticky top-2 z-10 mx-auto -mt-24 mb-36 flex  justify-center items-center p-2 gap-2 caret-accent outline outline-white/20 rounded-xl bg-slate-200 dark:bg-zinc-900 has-focus:outline-accent has-focus:outline-2 has-focus:not-dark:bg-slate-100 transition-all text-sm md:text-base w-2/3 lg:w-fit"
+          className="group **:text-black dark:**:text-white sticky top-2 z-10 mx-auto -mt-24 mb-36 flex  justify-center items-center p-2 gap-2 caret-accent outline outline-white/20 rounded-xl bg-slate-200 dark:bg-zinc-900 has-focus:outline-accent has-focus:outline-2 has-focus:not-dark:bg-slate-100 transition-all text-sm md:text-base w-2/3 sm:w-fit"
           searchFilter={searchFilter}
           setSearchFilter={setSearchFilter}
         />

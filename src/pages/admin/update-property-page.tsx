@@ -146,7 +146,7 @@ const UpdatePropertyForm = () => {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="bg-black text-white dark:bg-white dark:text-black w-full p-2 text-lg font-medium rounded-lg"
+        className="bg-black text-white dark:bg-white dark:text-black w-full p-2 text-lg font-medium rounded-lg flex justify-center items-center"
       >
         {isSubmitting ? <LoaderCircle className="animate-spin" /> : "Update"}
       </button>
