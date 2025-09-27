@@ -1,4 +1,4 @@
-import { propertyTypes } from "@/helper";
+import { propertyOffers, propertyTypes } from "@/helper";
 import { Search, Settings2 } from "lucide-react";
 import { motion } from "motion/react";
 import SelectInput from "../form/select-input";
@@ -15,6 +15,7 @@ interface Props {
 const SearchBox = ({ className, searchFilter, setSearchFilter }: Props) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [inputValue, setInputValue] = useState("");
+  const selectStyling = "max-h-8 **:text-xs w-fit";
 
   useEffect(() => {
     const timeoutID = setTimeout(() => {
@@ -22,7 +23,7 @@ const SearchBox = ({ className, searchFilter, setSearchFilter }: Props) => {
         ...searchFilter,
         search: inputValue.trim(),
       }));
-    }, 500);
+    }, 300);
     return () => {
       clearTimeout(timeoutID);
     };
@@ -53,10 +54,10 @@ const SearchBox = ({ className, searchFilter, setSearchFilter }: Props) => {
         <Settings2 className="group-has-focus:*:text-accent" />
       </motion.button>
       {menuOpen && (
-        <div className="absolute -bottom-24 -right-18 z-20 grid grid-cols-2 gap-x-4 text-black bg-white shadow-md dark:bg-black dark:text-white p-6 transition-all rounded-md">
+        <div className="absolute -bottom-28 z-20 grid grid-cols-2 gap-x-4 gap-y-4 text-black bg-white shadow-md dark:bg-black dark:text-white px-4 py-4 transition-all rounded-md dark:border-white/20 border border-black/30">
           <SelectInput
             placeholder="L.G.A"
-            className=""
+            className={selectStyling}
             options={lgaJson.Lagos}
             required={false}
             value={searchFilter.lga}
@@ -64,10 +65,30 @@ const SearchBox = ({ className, searchFilter, setSearchFilter }: Props) => {
               setSearchFilter({ ...searchFilter, lga: newValue });
             }}
           />
+          <SelectInput
+            placeholder="Type"
+            className={selectStyling}
+            options={propertyTypes}
+            required={false}
+            value={searchFilter.type}
+            onChange={(newValue) => {
+              setSearchFilter({ ...searchFilter, type: newValue });
+            }}
+          />
+          <SelectInput
+            placeholder="Offer"
+            className={selectStyling}
+            options={propertyOffers}
+            required={false}
+            value={searchFilter.offer}
+            onChange={(newValue) => {
+              setSearchFilter({ ...searchFilter, offer: newValue });
+            }}
+          />
 
           <SelectInput
             placeholder="Type"
-            className=""
+            className={selectStyling}
             options={propertyTypes}
             required={false}
             value={searchFilter.type}

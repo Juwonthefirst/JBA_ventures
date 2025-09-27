@@ -175,6 +175,7 @@ export const getStatusIcon = (statusCode: number) => {
 };
 
 export const propertyTypes = ["House", "Shop", "Land"];
+export const propertyOffers = ["Sale", "Rent", "Lease"];
 
 export const watchElementIntersecting = (
   target: HTMLElement | null,

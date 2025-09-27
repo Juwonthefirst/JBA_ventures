@@ -28,7 +28,6 @@ const MainPage = () => {
     const observer = watchElementIntersecting(
       intersectingElement.current,
       () => {
-        console.log("intersecting");
         if (isLoading || hasEnded) return;
         setPageNumber((currentPageNumber) => currentPageNumber++);
       }
@@ -38,7 +37,7 @@ const MainPage = () => {
 
   return (
     <>
-      <main className="py-16 px-4 /dark:bg-zinc-900">
+      <main className="py-16 px-4">
         <section className="relative flex w-full shadow-lg rounded-xl overflow-hidden">
           <img
             src={lagosImg}
@@ -51,7 +50,7 @@ const MainPage = () => {
           </div>
         </section>
         <Search
-          className="group **:text-black dark:**:text-white sticky top-2 z-10 mx-auto -mt-24 mb-36 flex  justify-center items-center p-2 gap-2 caret-accent outline outline-white/20 rounded-xl bg-slate-200 dark:bg-zinc-900 has-focus:outline-accent has-focus:outline-2 has-focus:bg-slate-100 transition-all text-sm md:text-base w-2/3 lg:w-fit"
+          className="group **:text-black dark:**:text-white sticky top-2 z-10 mx-auto -mt-24 mb-36 flex  justify-center items-center p-2 gap-2 caret-accent outline outline-white/20 rounded-xl bg-slate-200 dark:bg-zinc-900 has-focus:outline-accent has-focus:outline-2 has-focus:not-dark:bg-slate-100 transition-all text-sm md:text-base w-2/3 lg:w-fit"
           searchFilter={searchFilter}
           setSearchFilter={setSearchFilter}
         />

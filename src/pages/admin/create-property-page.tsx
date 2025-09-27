@@ -94,7 +94,6 @@ const CreatePropertyForm = () => {
           return;
         }
         setStatusCode(errorStatusCode);
-        alert(response);
       }}
     >
       <FileUploadSection control={control} />

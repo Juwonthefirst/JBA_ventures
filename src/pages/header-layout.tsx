@@ -40,7 +40,7 @@ const Header = () => {
     else if (!IsMenuOpened && menuDialog.open) menuDialog.close();
   }, [IsMenuOpened]);
   return (
-    <header className="flex py-2 px-4 md:px-12 md:py-3 fixed top-0 left-0 z-10 items-center justify-between w-full bg-white dark:bg-black">
+    <header className="flex py-2 px-4 md:px-12 md:py-3 fixed top-0 left-0 z-10 items-center justify-between w-full bg-white dark:bg-black shadow-md">
       <h1 className="text-xl font-semibold italic text-accent">JBA</h1>
       <NavBar className="text-sm gap-8 lg:mr-12 *:data-[iscurrent=false]:hover:opacity-100 *:data-[iscurrent=false]:hover:scale-105 hidden md:flex" />
       <button
