@@ -1,7 +1,7 @@
-import { useState, useEffect, useRef } from "react";
-import { Menu, X } from "lucide-react";
+import { useState } from "react";
+import { Menu } from "lucide-react";
 import { Link, Outlet, useLocation } from "react-router";
-import { motion } from "motion/react";
+import SlideInDialog from "@/components/slide-in-dialog";
 //import lightLogo from "@/assets/images/light-logo.png";
 //import darkLogo from "@/assets/images/dark-logo.png";
 
@@ -30,17 +30,9 @@ const NavBar = ({ className = "" }) => {
 
 const Header = () => {
   const [IsMenuOpened, setIsMenuOpened] = useState(false);
-  const menuDialogRef = useRef<HTMLDialogElement | null>(null);
 
-  useEffect(() => {
-    const menuDialog = menuDialogRef.current;
-    if (!menuDialog) return;
-
-    if (IsMenuOpened && !menuDialog.open) menuDialog.showModal();
-    else if (!IsMenuOpened && menuDialog.open) menuDialog.close();
-  }, [IsMenuOpened]);
   return (
-    <header className="flex py-2 px-4 md:px-12 md:py-3 fixed top-0 left-0 z-10 items-center justify-between w-full bg-white dark:bg-black shadow-md">
+    <header className="flex py-2 px-4 md:px-12 md:py-3 fixed top-0 left-0 z-10 items-center justify-between w-full bg-white dark:bg-black shadow-lg">
       <h1 className="text-xl font-semibold italic text-accent">JBA</h1>
       <NavBar className="text-sm gap-8 lg:mr-12 *:data-[iscurrent=false]:hover:opacity-100 *:data-[iscurrent=false]:hover:scale-105 hidden md:flex" />
       <button
@@ -53,25 +45,14 @@ const Header = () => {
         <Menu />
       </button>
       {IsMenuOpened && (
-        <motion.dialog
-          ref={menuDialogRef}
-          initial={{ x: 1200 }}
-          animate={{ x: 0 }}
-          className="h-screen flex flex-col gap-4 justify-self-end w-54 bg-white text-black dark:bg-black dark:text-white shadow-xl p-4"
+        <SlideInDialog
+          open={IsMenuOpened}
+          onClose={() => {
+            setIsMenuOpened(false);
+          }}
         >
-          <div className="flex gap-3 items-center justify-end">
-            <button
-              type="button"
-              className=""
-              onClick={() => {
-                setIsMenuOpened(false);
-              }}
-            >
-              <X />
-            </button>
-          </div>
           <NavBar className="flex flex-col gap-4 dark:*:border-white/20 *:border-black/20 *:not-last:border-b *:p-1" />
-        </motion.dialog>
+        </SlideInDialog>
       )}
     </header>
   );
