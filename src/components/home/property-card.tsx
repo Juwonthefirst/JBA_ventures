@@ -1,7 +1,7 @@
 import { Link } from "react-router";
 import { MapPin, Tag } from "lucide-react";
 import { type RefObject } from "react";
-import { type BaseProperty } from "@/types.ts";
+import { type BaseProperty, type TagType } from "@/types.ts";
 import { Skeleton } from "@/components/ui/skeleton.tsx";
 import TagList, { TagListSkeleton } from "@/components/home/tag-list";
 
@@ -28,6 +28,12 @@ const PropertyCard = ({
   lga,
   ref,
 }: BaseProperty & { ref?: RefObject<HTMLElement | null> }) => {
+  const shortenedTags: TagType = {};
+  Object.keys(tags)
+    .slice(0, 3)
+    .forEach((key) => {
+      shortenedTags[key] = tags[key];
+    });
   return (
     <article
       ref={ref}
@@ -49,7 +55,7 @@ const PropertyCard = ({
           <MapPin size="14" />
           <p>{lga + ", " + state}</p>
         </div>
-        <TagList tags={tags} />
+        <TagList tags={shortenedTags} />
       </Link>
       <div className="flex justify-between items-center mt-4">
         <p className="text-2xl font-medium">₦{price}</p>

@@ -35,7 +35,6 @@ const MainAdminPage = () => {
     const observer = watchElementIntersecting(
       intersectingElement.current,
       () => {
-        console.log("intersecting");
         if (isLoading || hasEnded) return;
         setPageNumber((currentPageNumber) => currentPageNumber++);
       }

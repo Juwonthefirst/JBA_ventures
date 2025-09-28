@@ -1,5 +1,5 @@
 import { Controller, type Control } from "react-hook-form";
-import { UploadIcon } from "lucide-react";
+import { Upload } from "lucide-react";
 
 import FileField from "@/components/form/file-input-field.tsx";
 import MultiFileField from "@/components/form/multi-file-input-field.tsx";
@@ -35,7 +35,7 @@ const FileUploadSection = ({ control }: Props) => {
           >
             <div className={"flex flex-col items-center justify-center h-64"}>
               <div className="flex size-8 items-center justify-center rounded-md bg-muted text-muted-foreground">
-                <UploadIcon />
+                <Upload />
               </div>
               <p className="my-2 w-full truncate text-wrap font-medium text-sm">
                 Upload property main image

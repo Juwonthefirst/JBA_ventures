@@ -54,7 +54,7 @@ const MainPage = () => {
           searchFilter={searchFilter}
           setSearchFilter={setSearchFilter}
         />
-        <section className="flex flex-col gap-20 sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-x-16 px-6 md:px-16">
+        <section className="flex flex-col gap-20 sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-x-16 px-4 md:px-16">
           {data.map((property, index) => (
             <PropertyCard
               key={property.id}
@@ -64,8 +64,8 @@ const MainPage = () => {
           ))}
 
           {isLoading &&
-            [1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map((element) => (
-              <PropertySkeleton key={element} />
+            Array.from({ length: 10 }).map((_, index) => (
+              <PropertySkeleton key={"key" + String(index)} />
             ))}
 
           {error && (
