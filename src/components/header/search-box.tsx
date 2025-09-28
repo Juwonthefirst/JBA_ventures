@@ -1,4 +1,4 @@
-import { type Dispatch, type SetStateAction, useState } from "react";
+import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
 import { Search, Settings2 } from "lucide-react";
 import { type ParamsType } from "@/types.ts";
 import { motion, type TargetAndTransition } from "motion/react";
@@ -9,8 +9,20 @@ interface Props {
 }
 
 const SearchBox = ({ setSearchFilter, expandTo = 270 }: Props) => {
-  const [filter, setFilter] = useState<ParamsType>({});
+  const [inputValue, setinputValue] = useState("");
   const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    const timeoutID = setTimeout(() => {
+      setSearchFilter((searchFilter) => ({
+        ...searchFilter,
+        search: inputValue.trim(),
+      }));
+    }, 300);
+    return () => {
+      clearTimeout(timeoutID);
+    };
+  }, [inputValue, setSearchFilter]);
 
   return (
     <motion.div
@@ -31,6 +43,10 @@ const SearchBox = ({ setSearchFilter, expandTo = 270 }: Props) => {
       <input
         placeholder="search for property"
         className="outline-0 w-4/5 group-data-[isopen=false]:hidden placeholder:italic text-sm"
+        value={inputValue}
+        onChange={(event) => {
+          setinputValue(event.target.value);
+        }}
       />
       <button
         type="button"

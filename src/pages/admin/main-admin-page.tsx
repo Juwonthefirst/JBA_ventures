@@ -1,6 +1,5 @@
 import { Link, useOutletContext } from "react-router";
 import { useEffect, useRef, useState } from "react";
-import { motion } from "motion/react";
 
 import StatusCard from "@/components/status-card.tsx";
 import SearchBox from "@/components/header/search-box.tsx";
@@ -78,10 +77,7 @@ const MainAdminPage = () => {
         Properties
       </h1>
       <main className="p-4">
-        <motion.div
-          layout
-          className="flex flex-col md:grid grid-cols-2 gap-x-4 gap-8"
-        >
+        <div className="flex flex-col md:grid grid-cols-2 gap-x-4 gap-8">
           {data.map((property, index) => (
             <PropertyCard
               key={property.id}
@@ -96,7 +92,7 @@ const MainAdminPage = () => {
             [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((number) => (
               <PropertySkeleton key={number} />
             ))}
-        </motion.div>
+        </div>
 
         {error && error.status > 299 && (
           <StatusCard status={error.status} onRetry={retry} withRetry />
