@@ -3,14 +3,14 @@
 /*@custom-variant dark (&:is(.dark *));*/
 @font-face {
   font-family: "Inter";
-  src: url("./assets/fonts/InterVariable.woff2") format("woff2-variations");
+  src: url("/src/assets/fonts/InterVariable.woff2") format("woff2-variations");
   font-display: swap;
   font-weight: 100 900;
   font-style: normal;
 }
 @font-face {
   font-family: "Inter";
-  src: url("./assets/fonts/InterVariable-italic.woff2")
+  src: url("/src/assets/fonts/InterVariable-italic.woff2")
     format("woff2-variations");
   font-display: swap;
   font-weight: 100 900;
