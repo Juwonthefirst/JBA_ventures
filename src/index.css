@@ -8,13 +8,6 @@
   font-weight: 100 900;
   font-style: normal;
 }
-@font-face {
-  font-family: "Inter";
-  src: url("/fonts/InterVariable-italic.woff2") format("woff2-variations");
-  font-display: swap;
-  font-weight: 100 900;
-  font-style: italic;
-}
 
 @theme {
   --color-accent: var(--color-green-500);
