@@ -5,7 +5,6 @@ import SelectInput from "../form/select-input";
 import { useState, useEffect, type Dispatch, type SetStateAction } from "react";
 import lgaJson from "@/assets/data/lgas.json";
 import type { ParamsType } from "@/types";
-import SlideInDialog from "../slide-in-dialog";
 
 interface Props {
   className: string;
@@ -55,8 +54,10 @@ const SearchBox = ({ className, searchFilter, setSearchFilter }: Props) => {
         <Settings2 className="group-has-focus:*:text-accent" />
       </motion.button>
       {menuOpen && (
-        <SlideInDialog
-          open={menuOpen}
+        <motion.div
+          className="w-1/2 relative top-0 right-0"
+          initial={{ x: 1200 }}
+          animate={{ x: 0 }}
           onClose={() => {
             setMenuOpen(false);
           }}
@@ -104,7 +105,7 @@ const SearchBox = ({ className, searchFilter, setSearchFilter }: Props) => {
               }}
             />
           </div>
-        </SlideInDialog>
+        </motion.div>
       )}
     </section>
   );

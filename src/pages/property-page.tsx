@@ -14,7 +14,7 @@ const PropertyPageSkeleton = () => {
   return (
     <div className="flex flex-col md:flex-row gap-4 md:items-center md:h-screen md:p-4">
       <Skeleton className="h-72 md:h-full mb-4 md:w-2/5" />
-      <div className="flex flex-col gap-4 p-4 pt-0 md:mt-4 md:h-full w-1/3">
+      <div className="flex flex-col gap-4 p-4 pt-0 md:mt-4 md:h-full w-full md:w-1/3">
         <Skeleton className="h-8 w-1/2" />
         <Skeleton className="h-6" />
         <TagListSkeleton />
@@ -58,14 +58,14 @@ const PropertyPage = () => {
 
         <div className="flex flex-col gap-4 p-4 pt-0 md:mt-4 overflow-y-auto md:h-full">
           <h2 className="text-2xl ">₦{data.price}</h2>
-          <div className="flex gap-1 text-sm items-center opacity-85">
+          <div className="flex gap-1 text-sm items-center opacity-80">
             <MapPin size="16" className="min-h-4 min-w-4" />
             <p>{`${data.address}, ${data.lga}, ${data.state}`}</p>
           </div>
           <TagList tags={data.tags} />
           <div className="mt-8">
             <h2 className="text-lg font-medium">Description:</h2>
-            <p className="leading-relaxed text-sm opacity-80 ml-2">
+            <p className="leading-relaxed text-sm opacity-85 ml-2">
               {data.description}
             </p>
             <h2 className="text-lg mt-6 font-medium">
