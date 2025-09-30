@@ -1,5 +1,5 @@
 import { useReducer, useEffect, useRef, useCallback } from "react";
-import { type AuthStateType } from "@/types.ts";
+import type { AuthStateType } from "@/types.ts";
 import authReducer from "@/reducers/authReducer.ts";
 
 interface UseAuthReturnType extends AuthStateType {

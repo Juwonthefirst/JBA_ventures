@@ -9,8 +9,19 @@
   font-style: normal;
 }
 
+:root {
+  --logo: url("/images/logo.jpg");
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --logo: url("/images/dark-logo.jpg");
+  }
+}
+
 @theme {
   --color-accent: var(--color-green-500);
+  --background-logo: var(--logo);
 }
 
 body {

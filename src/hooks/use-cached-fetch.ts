@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { type ParamsType } from "../types.ts";
+import type { ParamsType } from "../types.ts";
 import { fetchJSON } from "@/helper.ts";
 
 interface StateType<Type> {

@@ -4,6 +4,7 @@ import { type RefObject } from "react";
 import { type BaseProperty, type TagType } from "@/types.ts";
 import { Skeleton } from "@/components/ui/skeleton.tsx";
 import TagList, { TagListSkeleton } from "@/components/home/tag-list";
+import { numeralToStringRepresentation } from "@/helper";
 
 export const PropertySkeleton = () => {
   return (
@@ -58,7 +59,9 @@ const PropertyCard = ({
         <TagList tags={shortenedTags} />
       </Link>
       <div className="flex justify-between items-center mt-4">
-        <p className="text-2xl font-medium">₦{price}</p>
+        <p className="text-2xl font-medium">
+          ₦{numeralToStringRepresentation(price, offer === "Rent")}
+        </p>
       </div>
     </article>
   );

@@ -3,7 +3,7 @@ import { Menu } from "lucide-react";
 import { Link, Outlet, useLocation } from "react-router";
 import SlideInDialog from "@/components/slide-in-dialog";
 //import lightLogo from "@/assets/images/light-logo.png";
-//import darkLogo from "@/assets/images/dark-logo.png";
+//import darkLogo from "/images/dark-logo.jpg";
 
 const NavBar = ({ className = "" }) => {
   const currentLocation = useLocation();
@@ -33,7 +33,10 @@ const Header = () => {
 
   return (
     <header className="flex py-2 px-4 md:px-12 md:py-3 fixed top-0 left-0 z-10 items-center justify-between w-full bg-white dark:bg-black shadow-lg">
-      <h1 className="text-xl font-semibold italic text-accent">JBA</h1>
+      <div
+        id="JBA Logo"
+        className="h-8 md:h-10 lg:h-12 -m-2 bg-[var(--logo)] bg-cover"
+      ></div>
       <NavBar className="text-sm gap-8 *:data-[iscurrent=false]:hover:opacity-100 *:data-[iscurrent=false]:hover:scale-105 hidden md:flex" />
       <button
         type="button"

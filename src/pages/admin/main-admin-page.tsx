@@ -64,7 +64,7 @@ const MainAdminPage = () => {
 
   return (
     <>
-      <header className="flex py-2 px-4 fixed top-0 left-0 z-10 items-center justify-end w-full bg-white gap-4 dark:bg-zinc-900 dark:text-white">
+      <header className="flex py-2 px-4 fixed top-0 left-0 z-10 items-center justify-end w-full bg-white gap-4 dark:bg-black dark:text-white">
         <SearchBox expandTo={250} setSearchFilter={setSearchFilter} />
         <Link
           to="/admin/add"

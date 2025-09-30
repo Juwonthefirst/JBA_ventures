@@ -191,3 +191,30 @@ export const watchElementIntersecting = (
 
   return observer;
 };
+
+const powerToStringRepresentationMap: Record<number, string> = {
+  2: "Million",
+  3: "Billion",
+  4: "Trillion",
+};
+
+export const numeralToStringRepresentation = (
+  numeral: number,
+  isRent: boolean
+): string => {
+  const rentString = isRent ? " /yr" : "";
+
+  let powerOfAThousand = 0;
+  while (numeral / 1000 > 1 && powerOfAThousand < 4) {
+    numeral /= 1000;
+    powerOfAThousand++;
+  }
+
+  if (powerOfAThousand === 1) return String(numeral * 1000) + rentString;
+
+  const approximatedNumeral = Math.floor(numeral * 100) / 100;
+
+  return `${String(approximatedNumeral)} ${
+    powerToStringRepresentationMap[powerOfAThousand]
+  }${rentString}`;
+};

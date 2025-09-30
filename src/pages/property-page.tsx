@@ -71,7 +71,7 @@ const PropertyPage = () => {
             <h2 className="text-lg mt-6 font-medium">
               This property includes:
             </h2>
-            <ul className="list-disc list-inside text-sm space-y-1 p-2">
+            <ul className="list-disc list-inside text-sm space-y-1 p-2 *:opacity-85">
               {data.benefits.map((benefit, index) => (
                 <li key={benefit + String(index)}>{benefit}</li>
               ))}
