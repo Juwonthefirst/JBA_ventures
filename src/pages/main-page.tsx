@@ -54,7 +54,7 @@ const MainPage = () => {
           searchFilter={searchFilter}
           setSearchFilter={setSearchFilter}
         />
-        <section className="flex flex-col gap-20 sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-x-16 px-4 md:px-16">
+        <section className="flex flex-col gap-20 sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-x-16 px-4 md:px-16 w-full">
           {data.map((property, index) => (
             <PropertyCard
               key={property.id}
@@ -69,7 +69,12 @@ const MainPage = () => {
             ))}
 
           {error && (
-            <StatusCard status={error.status} onRetry={retry} withRetry />
+            <StatusCard
+              className="sm:col-span-2 lg:col-span-3"
+              status={error.status}
+              onRetry={retry}
+              withRetry
+            />
           )}
         </section>
       </main>
