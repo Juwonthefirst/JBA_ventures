@@ -101,7 +101,10 @@ const UpdatePropertyForm = () => {
 
   if (statusCode === 404) return <NotFoundPage />;
 
-  if (isFetching) return <LoaderCircle className="animate-spin" size="96" />;
+  if (isFetching)
+    return (
+      <div className="bg-[url('/images/light-loading.gif')] dark:bg-[url('/images/loading.gif')] h-[calc(100svh/2)] w-[calc(100svw*0.75)] bg-center bg-no-repeat mx-auto mt-12"></div>
+    );
   return (
     <Form
       className="p-6"

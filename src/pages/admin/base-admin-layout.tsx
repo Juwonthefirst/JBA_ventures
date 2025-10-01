@@ -4,7 +4,10 @@ import useAuth from "@/hooks/use-auth.ts";
 
 const AdminPage = () => {
   const auth = useAuth();
-  if (auth.fetchType === "initial") return <p>fetching....</p>;
+  if (auth.fetchType === "initial")
+    return (
+      <div className="bg-[url('/images/light-loading.gif')] dark:bg-[url('/images/loading.gif')] h-[calc(100svh/2)] w-[calc(100svw*0.75)] bg-center bg-no-repeat mx-auto mt-12"></div>
+    );
   return (
     <>
       {auth.isAuthenticated ? (
