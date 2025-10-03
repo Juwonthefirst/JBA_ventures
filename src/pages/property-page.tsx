@@ -1,4 +1,4 @@
-import { useParams } from "react-router";
+import { Link, useParams } from "react-router";
 import { MapPin } from "lucide-react";
 import TagList, { TagListSkeleton } from "@/components/home/tag-list.tsx";
 import useCachedFetch from "@/hooks/use-cached-fetch.ts";
@@ -63,7 +63,13 @@ const PropertyPage = () => {
             <p>{`${data.address}, ${data.lga}, ${data.state}`}</p>
           </div>
           <TagList tags={data.tags} />
-          <div className="mt-8">
+          <Link
+            to={String(import.meta.env.VITE_WHATSAPP_LINK)}
+            className="border-2 border-accent hover:bg-accent hover:text-white text-sm text-accent px-2 py-1 rounded-md w-fit transition"
+          >
+            Contact Agent
+          </Link>
+          <div className="mt-6">
             <h2 className="text-lg font-medium">Description:</h2>
             <p className="leading-relaxed text-sm opacity-85 ml-2">
               {data.description}

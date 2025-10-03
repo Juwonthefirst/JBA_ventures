@@ -33,10 +33,10 @@ const Header = () => {
   return (
     <header className="flex py-2 px-4 md:px-12 md:py-3 fixed top-0 left-0 z-10 items-center justify-between w-full bg-white dark:bg-black shadow-lg">
       <img src={logo} alt="Logo" className="h-8 md:h-10 -m-1" />
-      <NavBar className="text-sm  gap-6 lg:gap-8 *:data-[iscurrent=false]:hover:opacity-100 *:data-[iscurrent=false]:hover:scale-105 hidden md:flex" />
+      <NavBar className="text-sm gap-6 lg:gap-8 *:data-[iscurrent=false]:hover:opacity-100 *:data-[iscurrent=false]:hover:scale-105 hidden /md:flex" />
       <button
         type="button"
-        className="md:hidden p-2"
+        className="hidden p-2"
         onClick={() => {
           setIsMenuOpened(true);
         }}

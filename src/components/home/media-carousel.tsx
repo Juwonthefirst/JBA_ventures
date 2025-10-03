@@ -13,10 +13,7 @@ interface Props {
 
 const MediaCarousel = ({ urls }: Props) => {
   return (
-    <Carousel
-      className="w-full /md:w-3/5 /lg:w-2/5 lg:max-h-xl relative"
-      opts={{ loop: true }}
-    >
+    <Carousel className="w-full /md:w-3/5 /lg:w-2/5 lg:max-h-xl relative">
       <CarouselContent className="">
         {urls.map((url) => (
           <CarouselItem
