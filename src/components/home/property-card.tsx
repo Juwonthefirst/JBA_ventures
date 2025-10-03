@@ -50,7 +50,7 @@ const PropertyCard = ({
           <p>{offer}</p>
         </div>
       </div>
-      <Link to={"/" + String(id)} className="flex flex-col gap-3">
+      <Link to={"/property/" + String(id)} className="flex flex-col gap-3">
         <h2 className="text-xl font-medium line-clamp-1">{description}</h2>
         <div className="flex gap-1.5 text-sm items-center opacity-80">
           <MapPin size="14" />

@@ -14,7 +14,7 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: "/:id",
+    path: "/property/:id",
     Component: PropertyPage,
   },
   {
