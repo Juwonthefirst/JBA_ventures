@@ -1,7 +1,6 @@
 import { createBrowserRouter } from "react-router";
 import MainPage from "./pages/main-page.tsx";
 import PropertyPage from "./pages/property-page.tsx";
-import AboutPage from "./pages/about-page.tsx";
 import NotFoundPage from "./pages/404-page.tsx";
 import HeaderLayout from "./pages/header-layout.tsx";
 
@@ -11,7 +10,6 @@ const router = createBrowserRouter([
     Component: HeaderLayout,
     children: [
       { index: true, Component: MainPage },
-      { path: "/about", Component: AboutPage },
       { path: "/map", Component: MainPage },
     ],
   },

@@ -34,9 +34,9 @@ export const fetchJSON = async <Type>({
       ...extraInit,
     });
 
-    const data = (await response
-      .json()
-      .catch((error: unknown) => void error)) as Type;
+    const data = (await response.json().catch((error: unknown) => {
+      if (method !== "DELETE") throw error;
+    })) as Type;
     if (!response.ok) {
       void onError?.(response.status, JSON.stringify(data));
       return;

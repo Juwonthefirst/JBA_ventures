@@ -12,7 +12,7 @@ const backendURL = String(import.meta.env.VITE_BACKEND_URL);
 
 const PropertyPageSkeleton = () => {
   return (
-    <div className="flex flex-col md:flex-row gap-4 md:items-center md:h-screen md:p-4">
+    <div className="flex flex-col /md:flex-row gap-4 /md:items-center /md:h-screen md:p-4">
       <Skeleton className="h-72 md:h-full mb-4 md:w-2/5" />
       <div className="flex flex-col gap-4 p-4 pt-0 md:mt-4 md:h-full w-full md:w-1/3">
         <Skeleton className="h-8 w-1/2" />
@@ -48,7 +48,7 @@ const PropertyPage = () => {
 
   if (data)
     return (
-      <div className="flex flex-col md:flex-row gap-4 md:items-center dark:text-white md:h-screen md:p-4">
+      <div className="flex flex-col gap-4 dark:text-white /md:h-screen md:p-4">
         <MediaCarousel
           urls={[
             data.main_image,

@@ -14,12 +14,15 @@ interface Props {
 const MediaCarousel = ({ urls }: Props) => {
   return (
     <Carousel
-      className="w-full md:w-3/5 lg:w-2/5 relative"
+      className="w-full /md:w-3/5 /lg:w-2/5 lg:max-h-xl relative"
       opts={{ loop: true }}
     >
       <CarouselContent className="">
         {urls.map((url) => (
-          <CarouselItem key={url} className=" h-72 md:h-screen w-full md:p-4">
+          <CarouselItem
+            key={url}
+            className=" h-72 md:h-84 lg:h-108 /md:h-screen  w-full md:p-4"
+          >
             <Media src={url} />
           </CarouselItem>
         ))}
