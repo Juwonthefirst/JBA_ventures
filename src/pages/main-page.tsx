@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useInfiniteQuery } from "@tanstack/react-query";
 
 import PropertyCard, {
   PropertySkeleton,
