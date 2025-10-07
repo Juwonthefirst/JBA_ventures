@@ -1,5 +1,6 @@
 import { Link, useOutletContext } from "react-router";
 import { useEffect, useRef, useState } from "react";
+import axios from "axios";
 
 import StatusCard from "@/components/status-card.tsx";
 import SearchBox from "@/components/header/search-box.tsx";
@@ -11,35 +12,41 @@ import type { ParamsType, BaseProperty, AdminContext } from "@/types.ts";
 import { fetchJSON, watchElementIntersecting } from "@/helper.ts";
 import Popup from "@/components/popup";
 import usePaginatedFetch from "@/hooks/use-paginated-fetch";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { propertyQueryOption } from "@/queryOptions";
 
 const backendURL = String(import.meta.env.VITE_BACKEND_URL);
 
 const MainAdminPage = () => {
   const { authToken } = useOutletContext<AdminContext>();
   const [searchFilter, setSearchFilter] = useState<ParamsType>({});
-  const [pageNumber, setPageNumber] = useState(1);
-  const { data, error, isLoading, retry, hasEnded, mutateData } =
-    usePaginatedFetch<BaseProperty>(
-      backendURL + "/api/v1/property/",
-      pageNumber,
-      searchFilter
-    );
+  const {
+    data,
+    error,
+    status,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+    refetch,
+  } = useInfiniteQuery(propertyQueryOption(searchFilter));
+  const intersectingElement = useRef<HTMLElement | null>(null);
+
   const [deleteError, setDeleteError] = useState<{
     code?: number;
     message?: string;
   }>({});
-  const intersectingElement = useRef<HTMLDivElement | null>(null);
-
+  
   useEffect(() => {
+    if (isFetchingNextPage || !hasNextPage || status === "pending") return;
+
     const observer = watchElementIntersecting(
       intersectingElement.current,
       () => {
-        if (isLoading || hasEnded) return;
-        setPageNumber((currentPageNumber) => currentPageNumber++);
+        void fetchNextPage();
       }
     );
     return () => observer?.disconnect();
-  }, [isLoading, hasEnded]);
+  }, [isFetchingNextPage, hasNextPage, fetchNextPage, status]);
 
   const handleDelete = (id: number) => {
     void fetchJSON({
@@ -78,25 +85,36 @@ const MainAdminPage = () => {
       </h1>
       <main className="p-4">
         <div className="flex flex-col md:grid grid-cols-2 gap-x-4 gap-8">
-          {data.map((property, index) => (
-            <PropertyCard
-              key={property.id}
-              {...property}
-              ref={data.length - 5 === index ? intersectingElement : undefined}
-              onDelete={() => {
-                handleDelete(property.id);
-              }}
-            />
-          ))}
-          {isLoading &&
-            [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((number) => (
-              <PropertySkeleton key={number} />
-            ))}
-        </div>
+        {status === "success" &&
+            data.pages.flatMap((response) =>
+              response.results.map((property, index) => (
+                <PropertyCard
+                  key={property.id}
+                  {...property}
+                  ref={
+                    data.pageParams.length - 5 === index
+                      ? intersectingElement
+                      : undefined
+                  }
+                />
+              ))
+            )}
 
-        {error && error.status > 299 && (
-          <StatusCard status={error.status} onRetry={retry} withRetry />
-        )}
+          {(status === "pending" || isFetchingNextPage) &&
+            Array.from({ length: 10 }).map((_, index) => (
+              <PropertySkeleton key={"key" + String(index)} />
+            ))}
+
+          {status === "error" && (
+            <StatusCard
+              className="sm:col-span-2 lg:col-span-3"
+              status={
+                axios.isAxiosError(error) ? error.response?.status || 600 : 600
+              }
+              onRetry={() => void refetch()}
+              withRetry
+            />
+          )}
         {deleteError.code && (
           <Popup
             open={Boolean(deleteError)}
