@@ -54,7 +54,7 @@ const SearchBox = ({ className, searchFilter, setSearchFilter }: Props) => {
         <Settings2 className="group-has-focus:*:text-accent" />
       </motion.button>
       {menuOpen && (
-        <div className="absolute -bottom-36 -right-18 z-20 bg-white shadow-md dark:bg-black py-2 px-4 transition-all rounded-md border dark:border-white/20 border-black/80">
+        <div className="absolute -bottom-36 z-20 bg-white shadow-md dark:bg-black py-2 px-4 transition-all rounded-md border dark:border-white/20 border-black/80">
           <div className=" w-full grid grid-cols-2 gap-x-3 gap-y-2 mb-4">
             <SelectInput
               placeholder="L.G.A"

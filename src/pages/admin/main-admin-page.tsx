@@ -1,11 +1,7 @@
 import { Link, useOutletContext } from "react-router";
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
-import {
-  useInfiniteQuery,
-  useMutation,
-  type InfiniteData,
-} from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation } from "@tanstack/react-query";
 import { api } from "@/api-client";
 
 import StatusCard from "@/components/status-card.tsx";
@@ -13,12 +9,7 @@ import SearchBox from "@/components/header/search-box.tsx";
 import PropertyCard, {
   PropertySkeleton,
 } from "@/components/admin/admin-property-card.tsx";
-import type {
-  ParamsType,
-  AdminContext,
-  PaginatedResponse,
-  BaseProperty,
-} from "@/types.ts";
+import type { ParamsType, AdminContext } from "@/types.ts";
 import { watchElementIntersecting } from "@/helper.ts";
 import Popup from "@/components/popup";
 import { propertyQueryOption } from "@/queryOptions";
@@ -45,21 +36,7 @@ const MainAdminPage = () => {
       }),
     onSuccess: (_, varaibles, onMutateResult, context) => {
       void onMutateResult;
-      context.client.setQueryData<
-        InfiniteData<PaginatedResponse<BaseProperty>>
-      >(["properties"], (oldData) => {
-        if (oldData)
-          return {
-            ...oldData,
-            pages: oldData.pages.map((page) => ({
-              ...page,
-              results: page.results.filter((property) => {
-                console.log(property.id !== Number(varaibles.id));
-                return property.id !== Number(varaibles.id);
-              }),
-            })),
-          };
-      });
+      void context.client.invalidateQueries({ queryKey: ["properties"] });
 
       void context.client.invalidateQueries({
         queryKey: ["property", varaibles.id],
