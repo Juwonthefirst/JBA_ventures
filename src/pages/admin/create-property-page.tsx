@@ -1,7 +1,5 @@
-import { useOutletContext } from "react-router";
-import { useForm, type SubmitHandler } from "react-hook-form";
+import axios from "axios";
 import { LoaderCircle } from "lucide-react";
-import { useState } from "react";
 
 import Form from "@/components/form/form.tsx";
 import FileUploadSection from "@/components/admin/property-form/file-upload-section.tsx";
@@ -11,113 +9,81 @@ import ExtraInfoSection from "@/components/admin/property-form/extra-info-sectio
 import Popup from "@/components/popup.tsx";
 import StatusCard from "@/components/status-card.tsx";
 
-import type { AdminContext, PropertyFormInputs, ServerError } from "@/types.ts";
-import { clearCache } from "@/hooks/use-cached-fetch.ts";
-
-const backendURL = String(import.meta.env.VITE_BACKEND_URL);
+import type { PropertyFormInputs } from "@/types.ts";
+import useMutatingForm from "@/hooks/use-mutating-form";
 
 const CreatePropertyForm = () => {
-  const { authToken } = useOutletContext<AdminContext>();
-  const { control, handleSubmit, reset, setError } =
-    useForm<PropertyFormInputs>({
-      defaultValues: {
-        extra_media: [],
-        description: "",
-        benefits: [],
-        address: "",
-        state: "",
-        lga: "",
-        price: 0,
-        type: undefined,
-        offer: undefined,
-        tags: {},
-      },
-    });
-  const [isLoading, setIsLoading] = useState(false);
-  const [statusCode, setStatusCode] = useState<number | null>(null);
+  const form = useMutatingForm({
+    url: "/property/",
+    method: "post",
+    defaultValues: {
+      extra_media: [],
+      description: "",
+      benefits: [],
+      address: "",
+      state: "",
+      lga: "",
+      price: 0,
+      type: undefined,
+      offer: undefined,
+      tags: {},
+    },
+    onSuccess(data, context) {
+      context.client.setQueryData(["property", data.id], () => data);
+      void context.client.invalidateQueries({ queryKey: ["properties"] });
+      form.reset();
+    },
+  });
 
-  const onSubmit = async () => {
-    let inputValues: PropertyFormInputs | undefined;
-
-    const onSubmitSuccess: SubmitHandler<PropertyFormInputs> = (
-      submittedData
-    ) => {
-      inputValues = submittedData;
-    };
-    await handleSubmit(onSubmitSuccess)();
-
-    if (!inputValues) {
-      setIsLoading(false);
-      return;
-    }
-
-    return {
+  const onSubmit = (inputValues: PropertyFormInputs) => {
+    const uploadedData = {
       ...inputValues,
       tags: JSON.stringify(inputValues.tags),
     };
+
+    form.submit({
+      formData: uploadedData,
+    });
   };
 
   return (
-    <Form
-      className="p-6"
-      url={backendURL + "/api/v1/property/"}
-      headers={{ Authorization: `Bearer ${authToken}` }}
-      encType="multipart/form-data"
-      onSubmit={() => {
-        setIsLoading(true);
-        return onSubmit();
-      }}
-      onSuccess={() => {
-        setIsLoading(false);
-        // clearCache so new property shows on main admin page
-        // clears form inputs
-
-        setStatusCode(200);
-        clearCache();
-        reset();
-      }}
-      onError={async (response) => {
-        setIsLoading(false);
-        //show error message
-        const errorStatusCode =
-          response instanceof Response ? response.status : 600;
-
-        if (errorStatusCode === 400 && response instanceof Response) {
-          const data = (await response.json()) as ServerError;
-          Object.entries(data).forEach(([name, value]) => {
-            setError(name as keyof ServerError, {
-              type: "server",
-              message: value[0],
-            });
-          });
-
-          return;
-        }
-        setStatusCode(errorStatusCode);
-      }}
-    >
-      <FileUploadSection control={control} />
-      <InfoSection control={control} />
-      <LocationSection control={control} />
-      <ExtraInfoSection control={control} />
+    <Form onSubmit={() => form.verifySubmit(onSubmit)}>
+      <FileUploadSection control={form.control} />
+      <InfoSection control={form.control} />
+      <LocationSection control={form.control} />
+      <ExtraInfoSection control={form.control} />
       <button
         type="submit"
-        disabled={isLoading}
+        disabled={form.isSubmitting}
         className="flex justify-center items-center bg-black text-white dark:bg-white dark:text-black w-full p-2 text-lg font-medium rounded-lg"
       >
-        {isLoading ? <LoaderCircle className="animate-spin" /> : "Create"}
+        {form.isSubmitting ? (
+          <LoaderCircle className="animate-spin" />
+        ) : (
+          "Create"
+        )}
       </button>
-      {statusCode && (
+      {form.isFailed &&
+        axios.isAxiosError(form.error) &&
+        form.error.response?.status !== 400 && (
+          <Popup
+            open={form.isFailed}
+            onClose={() => {
+              form.clearState();
+            }}
+          >
+            <StatusCard status={form.error.response?.status || 600} />
+          </Popup>
+        )}
+
+      {form.isSuccess && (
         <Popup
-          open={Boolean(statusCode)}
+          open={form.isSuccess}
           onClose={() => {
-            setStatusCode(null);
+            form.clearState();
           }}
         >
-          <StatusCard
-            status={statusCode}
-            message={statusCode <= 299 ? "Property created successfully" : ""}
-          />
+          <StatusCard status={201} message="Property created successfully" />
         </Popup>
       )}
     </Form>

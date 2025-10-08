@@ -6,7 +6,6 @@ import PropertyCard, {
 } from "@/components/home/property-card";
 import Search from "@/components/home/search-box";
 import type { ParamsType } from "@/types.ts";
-//import usePaginatedFetch from "@/hooks/use-paginated-fetch";
 import StatusCard from "@/components/status-card.tsx";
 import lagosImg from "/images/lagos.jpg";
 
@@ -15,13 +14,12 @@ import { propertyQueryOption } from "@/queryOptions";
 import axios from "axios";
 
 const MainPage = () => {
-  const [searchFilter, setSearchFilter] = useState<ParamsType>({});
+  const [searchFilter, setSearchFilter] = useState<ParamsType>({ search: "" });
   const {
     data,
     error,
     status,
     isFetchingNextPage,
-
     hasNextPage,
     fetchNextPage,
     refetch,

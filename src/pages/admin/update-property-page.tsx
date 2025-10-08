@@ -1,6 +1,5 @@
-import { useParams, useOutletContext } from "react-router";
-import { useState, useEffect, useRef } from "react";
-import { useForm, type SubmitHandler } from "react-hook-form";
+import { useParams } from "react-router";
+import { useEffect, useRef, useState } from "react";
 import { LoaderCircle } from "lucide-react";
 
 import Form from "@/components/form/form.tsx";
@@ -13,46 +12,41 @@ import StatusCard from "@/components/status-card.tsx";
 import NotFoundPage from "../404-page.tsx";
 
 import type {
-  AdminContext,
   PropertyFormInputs,
   FormDataValues,
-  Property,
-  ServerError,
   FormDataObject,
+  Property,
 } from "@/types.ts";
-import { clearCache } from "@/hooks/use-cached-fetch.ts";
-import { fetchJSON, urlToFile } from "@/helper.ts";
-const backendURL = String(import.meta.env.VITE_BACKEND_URL);
+import axios from "axios";
+import useMutatingForm from "@/hooks/use-mutating-form.ts";
+import { useQuery } from "@tanstack/react-query";
+import { propertyIdQueryOPtion } from "@/queryOptions.ts";
+import { urlToFile } from "@/helper.ts";
 
 const UpdatePropertyForm = () => {
   const { id } = useParams();
-  const { authToken } = useOutletContext<AdminContext>();
-  const { handleSubmit, control, reset, setError } =
-    useForm<PropertyFormInputs>();
-  const [retryCount, setRetryCount] = useState(0);
-  const [isFetching, setIsFetching] = useState(true);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [statusCode, setStatusCode] = useState<number | null>(null);
+  const [isLoadingProperty, setIsLoadingProperty] = useState(true);
+
+  const propertyQuery = useQuery({
+    ...propertyIdQueryOPtion(String(id)),
+    staleTime: Infinity,
+  });
+  const form = useMutatingForm({
+    url: `/property/${String(id)}/`,
+    method: "patch",
+    onSuccess(data, context) {
+      context.client.setQueryData<Property>(["property", data.id], () => data);
+      void context.client.invalidateQueries({ queryKey: ["properties"] });
+    },
+  });
   const currentPropertyDataRef = useRef<FormDataObject>({});
 
-  const endpoint = `${backendURL}/api/v1/property/${String(id)}/`;
-  const onSubmit = async () => {
-    setIsSubmitting(true);
-    let inputValues:
-      | Record<keyof PropertyFormInputs, FormDataValues>
-      | undefined;
-
-    const onSubmitSuccess: SubmitHandler<PropertyFormInputs> = (
-      submittedData
-    ) => {
-      inputValues = submittedData;
-    };
-    await handleSubmit(onSubmitSuccess)();
-
-    if (!inputValues) return;
-
+  const onSubmit = (
+    inputValues: Record<keyof PropertyFormInputs, FormDataValues>
+  ) => {
     const updatedFields: FormDataObject = {};
     // looks for updated fields by comparing them to their initial value
+
     Object.entries(inputValues).forEach(([key, value]) => {
       if (key === "extra_media") {
         updatedFields.extra_media = value;
@@ -60,114 +54,81 @@ const UpdatePropertyForm = () => {
         updatedFields[key] = key === "tags" ? JSON.stringify(value) : value;
       }
     });
-    return updatedFields;
+    form.submit({ formData: updatedFields });
   };
 
   useEffect(() => {
-    const controller = new AbortController();
-    const signal = controller.signal;
-    setIsFetching(true);
-    void fetchJSON<Property>({
-      url: endpoint,
-      extraInit: { signal },
-      onSuccess: async (data) => {
-        // fetch data then convert the images into File objects to pass into File field
-        const mainImageFile = await urlToFile(data.main_image);
-        const arrayOfUrlToFile = data.extra_media.map((file) =>
+    if (propertyQuery.data && isLoadingProperty) {
+      void (async () => {
+        const propertyData = propertyQuery.data;
+        const mainImageFile = await urlToFile(propertyData.main_image);
+        const arrayOfUrlToFile = propertyData.extra_media.map((file) =>
           urlToFile(file.media)
         );
         const extraFiles = await Promise.all(arrayOfUrlToFile);
         const fetchedFormValues = {
-          ...data,
+          ...propertyData,
           main_image: mainImageFile,
           extra_media: extraFiles,
-          tags: data.tags,
+          tags: propertyData.tags,
         };
-        reset(fetchedFormValues);
+        form.reset(fetchedFormValues);
         currentPropertyDataRef.current = fetchedFormValues;
-        setIsFetching(false);
-      },
-      onError: (status, error) => {
-        if (status === 600) alert("Error: " + error);
-        alert(JSON.stringify(error));
-        setStatusCode(status);
-        setIsFetching(false);
-      },
-    });
-    return () => {
-      controller.abort();
-    };
-  }, [retryCount, endpoint, reset]);
+        setIsLoadingProperty(false);
+      })();
+    }
+  }, [propertyQuery.data, form, isLoadingProperty]);
 
-  if (statusCode === 404) return <NotFoundPage />;
+  if (
+    propertyQuery.isError &&
+    axios.isAxiosError(propertyQuery.error) &&
+    propertyQuery.error.response?.status === 404
+  )
+    return <NotFoundPage />;
 
-  if (isFetching)
+  if (isLoadingProperty)
     return (
       <div className="bg-[url('/images/light-loading.gif')] dark:bg-[url('/images/loading.gif')] h-[calc(100svh/2)] w-[calc(100svw*0.75)] bg-center bg-no-repeat mx-auto mt-12"></div>
     );
-  return (
-    <Form
-      className="p-6"
-      url={endpoint}
-      method="PATCH"
-      headers={{ Authorization: `Bearer ${authToken}` }}
-      encType="multipart/form-data"
-      onSubmit={onSubmit}
-      onSuccess={() => {
-        setIsSubmitting(false);
-        //Todo remove response.json after guarantee form works
-        // clearCache so new property shows on main admin page
-        // clears form inputs
-        setStatusCode(200);
-        clearCache();
-      }}
-      onError={async (response) => {
-        setIsSubmitting(false);
-        //show error message
-        const errorStatusCode =
-          response instanceof Response ? response.status : 600;
-        if (errorStatusCode === 400 && response instanceof Response) {
-          const data = (await response.json()) as ServerError;
-          Object.entries(data).forEach(([name, value]) => {
-            setError(name as keyof ServerError, {
-              type: "server",
-              message: value[0],
-            });
-          });
-          alert(JSON.stringify(data));
-          return;
-        }
 
-        setStatusCode(errorStatusCode);
-        alert(response);
-      }}
-    >
-      <FileUploadSection control={control} />
-      <InfoSection control={control} />
-      <LocationSection control={control} />
-      <ExtraInfoSection control={control} />
+  return (
+    <Form onSubmit={() => form.verifySubmit(onSubmit)}>
+      <FileUploadSection control={form.control} />
+      <InfoSection control={form.control} />
+      <LocationSection control={form.control} />
+      <ExtraInfoSection control={form.control} />
       <button
         type="submit"
-        disabled={isSubmitting}
+        disabled={form.isSubmitting}
         className="bg-black text-white dark:bg-white dark:text-black w-full p-2 text-lg font-medium rounded-lg flex justify-center items-center"
       >
-        {isSubmitting ? <LoaderCircle className="animate-spin" /> : "Update"}
+        {form.isSubmitting ? (
+          <LoaderCircle className="animate-spin" />
+        ) : (
+          "Update"
+        )}
       </button>
-      {statusCode && (
+      {form.isFailed &&
+        axios.isAxiosError(form.error) &&
+        form.error.response?.status !== 400 && (
+          <Popup
+            open={form.isFailed}
+            onClose={() => {
+              form.clearState();
+            }}
+          >
+            <StatusCard status={form.error.response?.status || 600} />
+          </Popup>
+        )}
+
+      {form.isSuccess && (
         <Popup
-          open={Boolean(statusCode)}
+          open={form.isSuccess}
           onClose={() => {
-            setStatusCode(null);
+            form.clearState();
           }}
         >
-          <StatusCard
-            status={statusCode}
-            message={statusCode <= 299 ? "Property updated successfully" : ""}
-            withRetry={Object.keys(currentPropertyDataRef).length < 1}
-            onRetry={() => {
-              setRetryCount((currentRetryCount) => currentRetryCount + 1);
-            }}
-          />
+          <StatusCard status={200} message="Property updated successfully" />
         </Popup>
       )}
     </Form>

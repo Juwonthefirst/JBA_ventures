@@ -48,7 +48,7 @@ export const fetchJSON = async <Type>({
   }
 };
 
-interface ObjectToFormDataPara {
+interface ObjectToFormDataParams {
   data: FormDataObject;
   formData?: FormData;
   namespace?: string;
@@ -58,7 +58,7 @@ export const objectToFormData = ({
   data,
   formData = new FormData(),
   namespace = "",
-}: ObjectToFormDataPara): FormData => {
+}: ObjectToFormDataParams): FormData => {
   Object.keys(data).forEach((key) => {
     const value = data[key];
     const formKey = namespace ? `${namespace}[${key}]` : key;
@@ -86,18 +86,6 @@ export const objectToFormData = ({
     }
   });
 
-  return formData;
-};
-
-export const arrayToFormData = (
-  key: string,
-  formData = new FormData(),
-  array: string[] | Blob[] | number[]
-) => {
-  array.forEach((item) => {
-    if (typeof item === "number") item = String(item);
-    formData.append(key, item);
-  });
   return formData;
 };
 

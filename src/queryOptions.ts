@@ -1,22 +1,21 @@
-import axios from "axios";
-import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query";
+import {
+  infiniteQueryOptions,
+  queryOptions,
+  skipToken,
+} from "@tanstack/react-query";
 import type {
   PaginatedResponse,
   BaseProperty,
   ParamsType,
   Property,
 } from "@/types";
+import { api } from "@/api-client";
 
-const server = axios.create({
-  baseURL: String(import.meta.env.VITE_BACKEND_URL),
-  timeout: 10000,
-});
-
-export const propertyQueryOption = (searchFilter: ParamsType = {}) =>
+export const propertyQueryOption = (searchFilter: ParamsType) =>
   infiniteQueryOptions({
     queryKey: ["properties", searchFilter],
     queryFn: ({ pageParam }) =>
-      server
+      api
         .get<PaginatedResponse<BaseProperty>>(
           "/property?" +
             new URLSearchParams({
@@ -27,15 +26,37 @@ export const propertyQueryOption = (searchFilter: ParamsType = {}) =>
         .then((res) => res.data),
     initialPageParam: 1,
     getNextPageParam: (lastPage, allPages, lastPageParam) => {
-      void lastPage;
       void allPages;
-      return lastPageParam++;
+      return lastPage.next ? lastPageParam++ : undefined;
     },
   });
 
-export const propertyIdQueryOPtion = (id: number) =>
+export const propertyIdQueryOPtion = (id: string) =>
   queryOptions({
     queryKey: ["property", id],
-    queryFn: () =>
-      axios.get<Property>(`/property/${String(id)}`).then((res) => res.data),
+    queryFn: () => api.get<Property>(`/property/${id}`).then((res) => res.data),
+  });
+
+export const csrfOption = queryOptions({
+  queryKey: ["csrf"],
+  queryFn: () =>
+    api.get<{ csrf: string }>("/auth/csrf").then((res) => res.data),
+  staleTime: Infinity,
+});
+
+export const accessTokenOption = (csrf: string | undefined) =>
+  queryOptions({
+    queryKey: ["accessToken"],
+    queryFn: csrf
+      ? () =>
+          api
+            .post<{ access: string }>("/auth/token/refresh/", {
+              headers: {
+                "X-CSRFTOKEN": csrf,
+              },
+            })
+            .then((res) => res.data)
+      : skipToken,
+    refetchInterval: 30 * 60 * 1000, // refetch access token every 30 minutes
+    staleTime: Infinity,
   });
