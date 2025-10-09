@@ -1,39 +1,42 @@
 import { useState, useEffect, useRef } from "react";
+import { useInfiniteQuery } from "@tanstack/react-query";
 
 import PropertyCard, {
   PropertySkeleton,
 } from "@/components/home/property-card";
 import Search from "@/components/home/search-box";
-import type { ParamsType, BaseProperty } from "@/types.ts";
-import usePaginatedFetch from "@/hooks/use-paginated-fetch";
+import type { ParamsType } from "@/types.ts";
 import StatusCard from "@/components/status-card.tsx";
 import lagosImg from "/images/lagos.jpg";
 
 import { watchElementIntersecting } from "@/helper";
-
-const backendURL = String(import.meta.env.VITE_BACKEND_URL);
+import { propertyQueryOption } from "@/queryOptions";
+import axios from "axios";
 
 const MainPage = () => {
-  const [searchFilter, setSearchFilter] = useState<ParamsType>({});
-  const [pageNumber, setPageNumber] = useState(1);
-  const { data, error, isLoading, retry, hasEnded } =
-    usePaginatedFetch<BaseProperty>(
-      backendURL + "/api/v1/property/",
-      pageNumber,
-      searchFilter
-    );
+  const [searchFilter, setSearchFilter] = useState<ParamsType>({ search: "" });
+  const {
+    data,
+    error,
+    status,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+    refetch,
+  } = useInfiniteQuery(propertyQueryOption(searchFilter));
   const intersectingElement = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
+    if (isFetchingNextPage || !hasNextPage || status === "pending") return;
+
     const observer = watchElementIntersecting(
       intersectingElement.current,
       () => {
-        if (isLoading || hasEnded || data.length < 40) return;
-        setPageNumber((currentPageNumber) => currentPageNumber++);
+        void fetchNextPage();
       }
     );
     return () => observer?.disconnect();
-  }, [isLoading, hasEnded, data]);
+  }, [isFetchingNextPage, hasNextPage, fetchNextPage, status]);
 
   return (
     <>
@@ -55,24 +58,33 @@ const MainPage = () => {
           setSearchFilter={setSearchFilter}
         />
         <section className="flex flex-col gap-20 sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-x-16 px-4 md:px-16 w-full">
-          {data.map((property, index) => (
-            <PropertyCard
-              key={property.id}
-              {...property}
-              ref={data.length - 5 === index ? intersectingElement : undefined}
-            />
-          ))}
+          {status === "success" &&
+            data.pages.flatMap((response) =>
+              response.results.map((property, index) => (
+                <PropertyCard
+                  key={property.id}
+                  {...property}
+                  ref={
+                    data.pageParams.length - 5 === index
+                      ? intersectingElement
+                      : undefined
+                  }
+                />
+              ))
+            )}
 
-          {isLoading &&
+          {(status === "pending" || isFetchingNextPage) &&
             Array.from({ length: 10 }).map((_, index) => (
               <PropertySkeleton key={"key" + String(index)} />
             ))}
 
-          {error && (
+          {status === "error" && (
             <StatusCard
               className="sm:col-span-2 lg:col-span-3"
-              status={error.status}
-              onRetry={retry}
+              status={
+                axios.isAxiosError(error) ? error.response?.status || 600 : 600
+              }
+              onRetry={() => void refetch()}
               withRetry
             />
           )}

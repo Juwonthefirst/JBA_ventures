@@ -1,66 +1,65 @@
 import { Link, useOutletContext } from "react-router";
 import { useEffect, useRef, useState } from "react";
+import axios from "axios";
+import { useInfiniteQuery, useMutation } from "@tanstack/react-query";
+import { api } from "@/api-client";
 
 import StatusCard from "@/components/status-card.tsx";
 import SearchBox from "@/components/header/search-box.tsx";
 import PropertyCard, {
   PropertySkeleton,
 } from "@/components/admin/admin-property-card.tsx";
-
-import type { ParamsType, BaseProperty, AdminContext } from "@/types.ts";
-import { fetchJSON, watchElementIntersecting } from "@/helper.ts";
+import type { ParamsType, AdminContext } from "@/types.ts";
+import { watchElementIntersecting } from "@/helper.ts";
 import Popup from "@/components/popup";
-import usePaginatedFetch from "@/hooks/use-paginated-fetch";
-
-const backendURL = String(import.meta.env.VITE_BACKEND_URL);
+import { propertyQueryOption } from "@/queryOptions";
 
 const MainAdminPage = () => {
   const { authToken } = useOutletContext<AdminContext>();
-  const [searchFilter, setSearchFilter] = useState<ParamsType>({});
-  const [pageNumber, setPageNumber] = useState(1);
-  const { data, error, isLoading, retry, hasEnded, mutateData } =
-    usePaginatedFetch<BaseProperty>(
-      backendURL + "/api/v1/property/",
-      pageNumber,
-      searchFilter
-    );
-  const [deleteError, setDeleteError] = useState<{
-    code?: number;
-    message?: string;
-  }>({});
+  const [searchFilter, setSearchFilter] = useState<ParamsType>({ search: "" });
+  const {
+    data,
+    error,
+    status,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+    refetch,
+  } = useInfiniteQuery(propertyQueryOption(searchFilter));
+
+  const mutation = useMutation({
+    mutationFn: ({ id }: { id: string }) =>
+      api.delete<string>(`/property/${id}/`, {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      }),
+    onSuccess: (_, varaibles, onMutateResult, context) => {
+      void onMutateResult;
+      void context.client.invalidateQueries({ queryKey: ["properties"] });
+
+      void context.client.invalidateQueries({
+        queryKey: ["property", varaibles.id],
+      });
+    },
+
+    onError(error) {
+      console.log(error);
+    },
+  });
   const intersectingElement = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
+    if (isFetchingNextPage || !hasNextPage || status === "pending") return;
+
     const observer = watchElementIntersecting(
       intersectingElement.current,
       () => {
-        if (isLoading || hasEnded) return;
-        setPageNumber((currentPageNumber) => currentPageNumber++);
+        void fetchNextPage();
       }
     );
     return () => observer?.disconnect();
-  }, [isLoading, hasEnded]);
-
-  const handleDelete = (id: number) => {
-    void fetchJSON({
-      url: `${backendURL}/api/v1/property/${String(id)}/`,
-      headers: { Authorization: `Bearer ${authToken}` },
-      method: "DELETE",
-      onSuccess: () => {
-        mutateData((fetchedProperties) => {
-          return fetchedProperties.filter((property) => property.id !== id);
-        });
-      },
-      onError: (status, error) => {
-        if (status === 400) {
-          const errorobject = JSON.parse(error) as { detail: string };
-          setDeleteError({ code: status, message: errorobject.detail });
-          return;
-        }
-        setDeleteError({ code: status });
-      },
-    });
-  };
+  }, [isFetchingNextPage, hasNextPage, fetchNextPage, status]);
 
   return (
     <>
@@ -77,41 +76,58 @@ const MainAdminPage = () => {
         Properties
       </h1>
       <main className="p-4">
-        <div className="flex flex-col md:grid grid-cols-2 gap-x-4 gap-8">
-          {data.map((property, index) => (
-            <PropertyCard
-              key={property.id}
-              {...property}
-              ref={data.length - 5 === index ? intersectingElement : undefined}
-              onDelete={() => {
-                handleDelete(property.id);
-              }}
-            />
-          ))}
-          {isLoading &&
-            [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((number) => (
-              <PropertySkeleton key={number} />
+        <div className="flex flex-col sm:grid grid-cols-2 gap-x-4 gap-8">
+          {status === "success" &&
+            data.pages.flatMap((response) =>
+              response.results.map((property, index) => (
+                <PropertyCard
+                  key={property.id}
+                  {...property}
+                  ref={
+                    data.pageParams.length - 5 === index
+                      ? intersectingElement
+                      : undefined
+                  }
+                  onDelete={() => {
+                    mutation.mutate({ id: String(property.id) });
+                  }}
+                />
+              ))
+            )}
+
+          {(status === "pending" || isFetchingNextPage) &&
+            Array.from({ length: 10 }).map((_, index) => (
+              <PropertySkeleton key={"key" + String(index)} />
             ))}
         </div>
-
-        {error && error.status > 299 && (
-          <StatusCard status={error.status} onRetry={retry} withRetry />
+        {status === "error" && axios.isAxiosError(error) && (
+          <StatusCard
+            className="sm:col-span-2 lg:col-span-3"
+            status={error.response?.status || 600}
+            onRetry={() => void refetch()}
+            withRetry
+          />
         )}
-        {deleteError.code && (
-          <Popup
-            open={Boolean(deleteError)}
-            onClose={() => {
-              setDeleteError({});
-            }}
-          >
-            <div className="flex flex-col gap-4">
-              <StatusCard
-                status={deleteError.code}
-                message={deleteError.message}
-              />
-            </div>
-          </Popup>
-        )}
+        {mutation.isError &&
+          axios.isAxiosError<{ detail: string }>(mutation.error) && (
+            <Popup
+              open={mutation.isError}
+              onClose={() => {
+                mutation.reset();
+              }}
+            >
+              <div className="flex flex-col gap-4">
+                <StatusCard
+                  status={mutation.error.response?.status || 600}
+                  message={
+                    mutation.error.response?.status === 400
+                      ? mutation.error.response.data.detail
+                      : undefined
+                  }
+                />
+              </div>
+            </Popup>
+          )}
       </main>
     </>
   );
