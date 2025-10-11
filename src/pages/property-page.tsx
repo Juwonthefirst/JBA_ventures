@@ -12,9 +12,9 @@ import axios from "axios";
 
 const PropertyPageSkeleton = () => {
   return (
-    <div className="flex flex-col /md:flex-row gap-4 /md:items-center /md:h-screen md:p-4">
-      <Skeleton className="h-72 md:h-full mb-4 md:w-2/5" />
-      <div className="flex flex-col gap-4 p-4 pt-0 md:mt-4 md:h-full w-full md:w-1/3">
+    <div className="flex flex-col lg:flex-row gap-4 lg:items-center lg:h-screen lg:p-4">
+      <Skeleton className="h-72 lg:h-full mb-4 lg:w-2/5 w-full" />
+      <div className="flex flex-col gap-4 p-4 pt-0 lg:mt-4 lg:h-full w-full lg:w-1/3">
         <Skeleton className="h-8 w-1/2" />
         <Skeleton className="h-6" />
         <TagListSkeleton />
@@ -36,9 +36,6 @@ const PropertyPageSkeleton = () => {
 
 const PropertyPage = () => {
   const { id } = useParams();
-  // const { isLoading, error, data, retry } = useCachedFetch<Property>(
-  //   `${backendURL}/api/v1/property/${String(id)}`
-  // );
 
   const { data, error, status, refetch } = useQuery(
     propertyIdQueryOPtion(String(id))
@@ -60,7 +57,7 @@ const PropertyPage = () => {
     );
 
   return (
-    <div className="flex flex-col gap-4 dark:text-white /md:h-screen md:p-4">
+    <div className="flex flex-col lg:flex-row gap-4 lg:items-center lg:h-screen lg:p-4 dark:text-white">
       <MediaCarousel
         urls={[
           data.main_image,
@@ -68,7 +65,7 @@ const PropertyPage = () => {
         ]}
       />
 
-      <div className="flex flex-col gap-4 p-4 pt-0 md:mt-4 overflow-y-auto md:h-full">
+      <div className="flex flex-col gap-4 p-4 pt-0 lg:mt-4 overflow-y-auto lg:h-full">
         <h2 className="text-2xl ">₦{data.price}</h2>
         <div className="flex gap-1 text-sm items-center opacity-80">
           <MapPin size="16" className="min-h-4 min-w-4" />

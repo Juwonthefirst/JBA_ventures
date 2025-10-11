@@ -17,7 +17,7 @@ export const propertyQueryOption = (searchFilter: ParamsType) =>
     queryFn: ({ pageParam }) =>
       api
         .get<PaginatedResponse<BaseProperty>>(
-          "/property?" +
+          "/property/?" +
             new URLSearchParams({
               page: String(pageParam),
               ...searchFilter,

@@ -8,73 +8,64 @@ import states from "@/assets/data/states.json";
 import lgas from "@/assets/data/lgas.json";
 
 interface Props {
-    control: Control<PropertyFormInputs>;
+  control: Control<PropertyFormInputs>;
 }
 
 const LocationSection = ({ control }: Props) => {
-    const lgasData: { [key: string]: string[] } = lgas;
-    return (
-        <>
-            <Controller
-                name="address"
-                control={control}
-                rules={{ required: "You need to enter the property's address" }}
-                render={({
-                    field: { onChange, value },
-                    fieldState: { error }
-                }) => (
-                    <InputField
-                        label="Address"
-                        value={value}
-                        onChange={onChange}
-                        error={error?.message}
-                    />
-                )}
+  const lgasData: { [key: string]: string[] } = lgas;
+  return (
+    <>
+      <Controller
+        name="address"
+        control={control}
+        rules={{ required: "You need to enter the property's address" }}
+        render={({ field: { onChange, value }, fieldState: { error } }) => (
+          <InputField
+            label="Address"
+            value={value}
+            onChange={onChange}
+            error={error?.message}
+          />
+        )}
+      />
+      <div className="flex gap-4">
+        <Controller
+          name="state"
+          control={control}
+          rules={{
+            required: "enter state",
+          }}
+          render={({ field: { onChange, value }, fieldState: { error } }) => (
+            <SelectField
+              label="State"
+              placeholder="Select a state"
+              options={states}
+              value={value}
+              onChange={onChange}
+              error={error?.message}
             />
-            <div className="flex gap-4">
-                <Controller
-                    name="state"
-                    control={control}
-                    rules={{
-                        required: "enter state"
-                    }}
-                    render={({
-                        field: { onChange, value },
-                        fieldState: { error }
-                    }) => (
-                        <SelectField
-                            label="State"
-                            placeholder="Select a state"
-                            options={states}
-                            value={value}
-                            onChange={onChange}
-                            error={error?.message}
-                        />
-                    )}
-                />
-                <Controller
-                    name="lga"
-                    control={control}
-                    rules={{
-                        required: "enter lga"
-                    }}
-                    render={({
-                        field: { onChange, value },
-                        fieldState: { error }
-                    }) => (
-                        <SelectField
-                            label="L.G.A"
-                            placeholder={"Select a LGA"}
-                            options={lgasData["Lagos"]}
-                            value={value}
-                            onChange={onChange}
-                            error={error?.message}
-                        />
-                    )}
-                />
-            </div>
-        </>
-    );
+          )}
+        />
+        <Controller
+          name="lga"
+          control={control}
+          rules={{
+            required: "enter lga",
+          }}
+          render={({ field: { onChange, value }, fieldState: { error } }) => (
+            <SelectField
+              label="L.G.A"
+              placeholder={"Select a LGA"}
+              options={lgasData["Lagos"]}
+              value={value}
+              onChange={onChange}
+              error={error?.message}
+            />
+          )}
+        />
+      </div>
+    </>
+  );
 };
 
 export default LocationSection;
