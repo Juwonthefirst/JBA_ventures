@@ -13,6 +13,7 @@ import type { ParamsType, AdminContext } from "@/types.ts";
 import { watchElementIntersecting } from "@/helper.ts";
 import Popup from "@/components/popup";
 import { propertyQueryOption } from "@/queryOptions";
+import NoProperty from "@/components/no-property-card";
 
 const MainAdminPage = () => {
   const { authToken } = useOutletContext<AdminContext>();
@@ -77,6 +78,9 @@ const MainAdminPage = () => {
       </h1>
       <main className="p-4">
         <div className="flex flex-col sm:grid grid-cols-2 gap-x-4 gap-8">
+          {status === "success" && data.pages[0].results.length === 0 && (
+            <NoProperty />
+          )}
           {status === "success" &&
             data.pages.flatMap((response) =>
               response.results.map((property, index) => (

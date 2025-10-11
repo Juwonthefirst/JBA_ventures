@@ -12,6 +12,7 @@ import lagosImg from "/images/lagos.jpg";
 import { watchElementIntersecting } from "@/helper";
 import { propertyQueryOption } from "@/queryOptions";
 import axios from "axios";
+import NoProperty from "@/components/no-property-card";
 
 const MainPage = () => {
   const [searchFilter, setSearchFilter] = useState<ParamsType>({ search: "" });
@@ -58,6 +59,9 @@ const MainPage = () => {
           setSearchFilter={setSearchFilter}
         />
         <section className="flex flex-col gap-20 sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-x-16 px-4 md:px-16 w-full">
+          {status === "success" && data.pages[0].results.length === 0 && (
+            <NoProperty className="sm:col-span-2 lg:col-span-3" />
+          )}
           {status === "success" &&
             data.pages.flatMap((response) =>
               response.results.map((property, index) => (
