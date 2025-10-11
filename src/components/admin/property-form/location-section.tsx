@@ -1,4 +1,4 @@
-import { Controller, type Control } from "react-hook-form";
+import { Controller, useFormContext, type Control } from "react-hook-form";
 
 import InputField from "@/components/form/input-field.tsx";
 import SelectField from "@/components/form/select-input.tsx";
@@ -12,6 +12,8 @@ interface Props {
 }
 
 const LocationSection = ({ control }: Props) => {
+  const { watch } = useFormContext<PropertyFormInputs>();
+  const state = watch("state");
   const lgasData: { [key: string]: string[] } = lgas;
   return (
     <>
@@ -56,7 +58,7 @@ const LocationSection = ({ control }: Props) => {
             <SelectField
               label="L.G.A"
               placeholder={"Select a LGA"}
-              options={lgasData["Lagos"]}
+              options={lgasData[state]}
               value={value}
               onChange={onChange}
               error={error?.message}
