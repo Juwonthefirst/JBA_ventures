@@ -24,8 +24,8 @@ const MediaCarousel = ({ urls }: Props) => {
           </CarouselItem>
         ))}
       </CarouselContent>
-      <CarouselPrevious className="absolute left-0 text-accent border-0" />
-      <CarouselNext className="absolute right-4 text-accent border-0" />
+      <CarouselPrevious className="absolute left-0 text-accent border-0 scale-125" />
+      <CarouselNext className="absolute right-4 text-accent border-0 scale-125" />
     </Carousel>
   );
 };

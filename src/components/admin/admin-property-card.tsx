@@ -36,7 +36,7 @@ const AdminPropertyCard = ({
   return (
     <div
       ref={ref}
-      className="flex gap-2 items-center rounded-lg p-2 bg-slate-100 dark:text-white dark:bg-black"
+      className="flex gap-2 items-center rounded-lg p-2 bg-slate-200 dark:text-white dark:bg-black"
     >
       <img src={main_image} className="object-cover w-16 h-16 rounded-lg" />
       <div className="flex flex-col gap-1.5 relative w-full">

@@ -95,7 +95,7 @@ const UpdatePropertyForm = () => {
     <Form onSubmit={() => form.verifySubmit(onSubmit)}>
       <FileUploadSection control={form.control} />
       <InfoSection control={form.control} />
-      <LocationSection control={form.control} />
+      <LocationSection control={form.control} watch={form.watch} />
       <ExtraInfoSection control={form.control} />
       <button
         type="submit"

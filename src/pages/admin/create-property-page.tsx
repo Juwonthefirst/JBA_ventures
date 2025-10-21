@@ -1,4 +1,4 @@
-import axios from "axios";
+import { isAxiosError } from "axios";
 import { LoaderCircle } from "lucide-react";
 
 import Form from "@/components/form/form.tsx";
@@ -21,11 +21,11 @@ const CreatePropertyForm = () => {
       description: "",
       benefits: [],
       address: "",
-      state: "",
-      lga: "",
+      state: " ",
+      lga: " ",
       price: 0,
-      type: undefined,
-      offer: undefined,
+      type: "",
+      offer: "",
       tags: {},
     },
     onSuccess(data, context) {
@@ -50,7 +50,7 @@ const CreatePropertyForm = () => {
     <Form onSubmit={() => form.verifySubmit(onSubmit)}>
       <FileUploadSection control={form.control} />
       <InfoSection control={form.control} />
-      <LocationSection control={form.control} />
+      <LocationSection control={form.control} watch={form.watch} />
       <ExtraInfoSection control={form.control} />
       <button
         type="submit"
@@ -64,7 +64,7 @@ const CreatePropertyForm = () => {
         )}
       </button>
       {form.isFailed &&
-        axios.isAxiosError(form.error) &&
+        isAxiosError(form.error) &&
         form.error.response?.status !== 400 && (
           <Popup
             open={form.isFailed}

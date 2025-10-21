@@ -43,7 +43,7 @@ const SearchBox = ({ className, searchFilter, setSearchFilter }: Props) => {
       />
       <motion.button
         type="button"
-        className="-m-2 p-1.5 rounded-md hover:bg-black/40 active:bg-black/60 transition-colors"
+        className="-m-2 p-1.5 rounded-md hover:scale-125"
         animate={{
           rotate: menuOpen ? 90 : undefined,
         }}

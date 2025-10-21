@@ -42,7 +42,7 @@ const PropertyCard = ({
     >
       <div className="relative">
         <img
-          className="rounded-lg h-64 md:h-52  object-cover w-full group-hover:shadow-lg"
+          className="rounded-lg h-64 md:h-52  object-cover w-full shadow-lg"
           src={main_image}
         />
         <div className="flex gap-1 px-2 py-1 items-center absolute bottom-2 left-2 text-sm bg-slate-200 dark:bg-black dark:text-white rounded-md">

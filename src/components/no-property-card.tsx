@@ -8,7 +8,9 @@ const NoProperty = ({ className = "" }: { className?: string }) => {
       }
     >
       <Frown size={72} />
-      <p className="text-sm md:text-base">Looks there are no properties here</p>
+      <p className="text-sm md:text-base">
+        Looks like there are no properties here
+      </p>
     </div>
   );
 };

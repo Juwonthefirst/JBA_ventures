@@ -40,7 +40,7 @@ const MultiFileField = ({ maxSize, onChange, value }: Props) => {
           return (
             <div key={key} className="relative h-full w-24 shrink-0">
               <MediaTag
-                className="absolute top-0 left-0 h-full w-full object-cover rounded-md"
+                className="absolute top-0 left-0 h-full w-full object-cover rounded-md shadow-lg"
                 src={mediaSRC}
                 controls
                 playsInline

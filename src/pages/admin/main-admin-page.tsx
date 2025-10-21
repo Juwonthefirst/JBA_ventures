@@ -45,7 +45,7 @@ const MainAdminPage = () => {
     },
 
     onError(error) {
-      console.log(error);
+      void error;
     },
   });
   const intersectingElement = useRef<HTMLDivElement | null>(null);
@@ -76,7 +76,7 @@ const MainAdminPage = () => {
       <h1 className="text-2xl font-semibold p-2 pt-16 dark:text-white">
         Properties
       </h1>
-      <main className="p-4">
+      <main className="p-4 md:p-6 lg:p-8">
         <div className="flex flex-col sm:grid grid-cols-2 gap-x-4 gap-8">
           {status === "success" && data.pages[0].results.length === 0 && (
             <NoProperty />

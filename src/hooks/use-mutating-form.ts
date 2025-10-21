@@ -33,7 +33,7 @@ interface Props {
 
 const useMutatingForm = ({ method, defaultValues, onSuccess, url }: Props) => {
   const { authToken } = useOutletContext<AdminContext>();
-  const { handleSubmit, control, reset, setError } =
+  const { handleSubmit, control, reset, setError, watch } =
     useForm<PropertyFormInputs>({
       defaultValues,
     });
@@ -85,6 +85,7 @@ const useMutatingForm = ({ method, defaultValues, onSuccess, url }: Props) => {
     verifySubmit,
     control,
     reset,
+    watch,
     isSubmitting: mutation.isPending,
     isSuccess: mutation.isSuccess,
     isFailed: mutation.isError,

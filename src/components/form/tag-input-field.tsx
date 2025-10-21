@@ -14,7 +14,7 @@ interface TagProp {
 
 const Tag = ({ type, text, onDelete }: TagProp) => {
   return (
-    <div className="inline-flex gap-1 items-center p-2 bg-slate-100 rounded-sm dark:bg-zinc-800 text-xs w-fit mr-2 mb-2">
+    <div className="inline-flex gap-1 items-center p-2 bg-slate-200 rounded-sm dark:bg-zinc-800 text-xs w-fit mr-2 mb-2">
       <Icon type={type} size="14" />
       <p>{text}</p>
       <button type="button" onClick={onDelete} className="ml-1 ">

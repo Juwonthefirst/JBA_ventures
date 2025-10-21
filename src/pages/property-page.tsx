@@ -66,7 +66,7 @@ const PropertyPage = () => {
       />
 
       <div className="flex flex-col gap-4 p-4 pt-0 lg:mt-4 overflow-y-auto lg:h-full">
-        <h2 className="text-2xl ">₦{data.price}</h2>
+        <h2 className="text-2xl">₦{data.price}</h2>
         <div className="flex gap-1 text-sm items-center opacity-80">
           <MapPin size="16" className="min-h-4 min-w-4" />
           <p>{`${data.address}, ${data.lga}, ${data.state}`}</p>
@@ -74,7 +74,7 @@ const PropertyPage = () => {
         <TagList tags={data.tags} />
         <Link
           to={String(import.meta.env.VITE_WHATSAPP_LINK)}
-          className="border-2 border-accent hover:bg-accent hover:text-white text-sm text-accent px-2 py-1 rounded-md w-fit transition"
+          className="border-2 border-accent hover:bg-accent hover:text-white text-sm text-accent px-2 py-1 rounded-md w-fit transition-all"
         >
           Contact Agent
         </Link>
