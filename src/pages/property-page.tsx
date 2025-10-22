@@ -74,7 +74,7 @@ const PropertyPage = () => {
         <TagList tags={data.tags} />
         <Link
           to={String(import.meta.env.VITE_WHATSAPP_LINK)}
-          className="border-2 border-accent hover:bg-accent hover:text-white text-sm text-accent px-2 py-1 rounded-md w-fit transition-all"
+          className="border-2 border-accent [&:hover,&:active]:bg-accent [&:hover,&:active]:text-white text-sm text-accent px-2 py-1 rounded-md w-fit transition-all"
         >
           Contact Agent
         </Link>
