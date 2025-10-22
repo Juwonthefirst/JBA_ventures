@@ -9,7 +9,7 @@ import type { ParamsType } from "@/types.ts";
 import StatusCard from "@/components/status-card.tsx";
 import lagosImg from "/images/lagos.jpg";
 
-import { watchElementIntersecting } from "@/helper";
+import { watchElementIntersecting } from "@/utils";
 import { propertyQueryOption } from "@/queryOptions";
 import axios from "axios";
 import NoProperty from "@/components/no-property-card";

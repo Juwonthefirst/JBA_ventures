@@ -11,17 +11,18 @@ import Popup from "@/components/popup.tsx";
 import StatusCard from "@/components/status-card.tsx";
 import NotFoundPage from "../404-page.tsx";
 
-import type {
-  PropertyFormInputs,
-  FormDataValues,
-  FormDataObject,
-  Property,
+import {
+  type PropertyFormInputs,
+  type FormDataValues,
+  type FormDataObject,
+  type Property,
+  type ServerFile,
 } from "@/types.ts";
 import axios from "axios";
 import useMutatingForm from "@/hooks/use-mutating-form.ts";
 import { useQuery } from "@tanstack/react-query";
 import { propertyIdQueryOPtion } from "@/queryOptions.ts";
-import { urlToFile } from "@/helper.ts";
+import { urlToFile, isServerFile } from "@/utils.ts";
 
 const UpdatePropertyForm = () => {
   const { id } = useParams();
@@ -45,12 +46,33 @@ const UpdatePropertyForm = () => {
     inputValues: Record<keyof PropertyFormInputs, FormDataValues>
   ) => {
     const updatedFields: FormDataObject = {};
+    updatedFields.extra_media_upload = [];
+    const fetchedExtraMedia = currentPropertyDataRef.current
+      .extra_media as ServerFile[];
+    const fetchedExtraMediaId = fetchedExtraMedia.map((file) => file.serverId);
     // looks for updated fields by comparing them to their initial value
+    const extraMediaValues = inputValues.extra_media as File[] | undefined;
+    if (extraMediaValues) {
+      extraMediaValues.forEach((media) => {
+        if (isServerFile(media)) {
+          if (fetchedExtraMediaId.includes(media.serverId)) {
+            const arrayPosition = fetchedExtraMediaId.indexOf(media.serverId);
+            fetchedExtraMediaId.splice(arrayPosition, 1);
+          }
+          return;
+        }
+        updatedFields.extra_media_upload = [
+          ...(updatedFields.extra_media_upload as File[]),
+          media,
+        ];
+      });
+
+      updatedFields.removed_media_id = fetchedExtraMediaId;
+    }
 
     Object.entries(inputValues).forEach(([key, value]) => {
-      if (key === "extra_media") {
-        updatedFields.extra_media = value;
-      } else if (currentPropertyDataRef.current[key] !== value) {
+      if (key === "extra_media") return;
+      if (currentPropertyDataRef.current[key] !== value) {
         updatedFields[key] = key === "tags" ? JSON.stringify(value) : value;
       }
     });
@@ -61,9 +83,12 @@ const UpdatePropertyForm = () => {
     if (propertyQuery.data && isLoadingProperty) {
       void (async () => {
         const propertyData = propertyQuery.data;
-        const mainImageFile = await urlToFile(propertyData.main_image);
+        const mainImageFile = await urlToFile(
+          propertyData.main_image,
+          propertyData.id
+        );
         const arrayOfUrlToFile = propertyData.extra_media.map((file) =>
-          urlToFile(file.media)
+          urlToFile(file.media, file.id)
         );
         const extraFiles = await Promise.all(arrayOfUrlToFile);
         const fetchedFormValues = {

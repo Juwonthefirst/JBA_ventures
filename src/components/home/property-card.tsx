@@ -4,7 +4,7 @@ import { type RefObject } from "react";
 import { type BaseProperty, type TagType } from "@/types.ts";
 import { Skeleton } from "@/components/ui/skeleton.tsx";
 import TagList, { TagListSkeleton } from "@/components/home/tag-list";
-import { numeralToStringRepresentation } from "@/helper";
+import { numeralToStringRepresentation } from "@/utils";
 
 export const PropertySkeleton = () => {
   return (

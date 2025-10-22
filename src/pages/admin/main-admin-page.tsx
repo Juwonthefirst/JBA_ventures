@@ -10,7 +10,7 @@ import PropertyCard, {
   PropertySkeleton,
 } from "@/components/admin/admin-property-card.tsx";
 import type { ParamsType, AdminContext } from "@/types.ts";
-import { watchElementIntersecting } from "@/helper.ts";
+import { watchElementIntersecting } from "@/utils";
 import Popup from "@/components/popup";
 import { propertyQueryOption } from "@/queryOptions";
 import NoProperty from "@/components/no-property-card";

@@ -1,4 +1,4 @@
-import { getStatusMessage, getStatusIcon } from "@/helper.ts";
+import { getStatusMessage, getStatusIcon } from "@/utils";
 
 interface Props {
   status: number;

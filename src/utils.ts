@@ -1,12 +1,27 @@
 import { XCircle, CheckCircle, RadioTower } from "lucide-react";
 
-export const urlToFile = async (url: string) => {
+class ServerFile extends File {
+  serverId: number;
+  constructor(
+    serverId: number,
+    fileBits: BlobPart[],
+    fileName: string,
+    options?: FilePropertyBag
+  ) {
+    super(fileBits, fileName, options);
+    this.serverId = serverId;
+  }
+}
+
+export const isServerFile = (value: unknown) => value instanceof ServerFile;
+
+export const urlToFile = async (url: string, serverId: number) => {
   const response = await fetch(url);
   const blob = await response.blob();
-  const file: File & { fetched?: boolean } = new File([blob], url, {
+  const file = new ServerFile(serverId, [blob], url, {
     type: blob.type,
   });
-  file.fetched = true;
+
   return file;
 };
 

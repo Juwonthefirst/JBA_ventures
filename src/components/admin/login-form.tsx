@@ -2,7 +2,7 @@ import InputField from "../form/input-field.tsx";
 import Form from "../form/form.tsx";
 import { useState, type ReactNode } from "react";
 import { LoaderCircle } from "lucide-react";
-import { getStatusMessage } from "@/helper.ts";
+import { getStatusMessage } from "@/utils.ts";
 import axios from "axios";
 import { useMutation } from "@tanstack/react-query";
 import { api } from "@/api-client.ts";

@@ -1,4 +1,4 @@
-import { propertyOffers, propertyTypes } from "@/helper";
+import { propertyOffers, propertyTypes } from "@/utils";
 import { Search, Settings2 } from "lucide-react";
 import { motion } from "motion/react";
 import SelectInput from "../form/select-input";

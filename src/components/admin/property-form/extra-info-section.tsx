@@ -3,7 +3,7 @@ import { Controller, type Control } from "react-hook-form";
 import TagInputField from "@/components/form/tag-input-field.tsx";
 import SelectField from "@/components/form/select-input.tsx";
 import type { PropertyFormInputs } from "@/types.ts";
-import { propertyOffers, propertyTypes } from "@/helper";
+import { propertyOffers, propertyTypes } from "@/utils";
 
 interface Props {
   control: Control<PropertyFormInputs>;

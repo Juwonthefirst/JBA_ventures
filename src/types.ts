@@ -42,9 +42,11 @@ export type AdminContext = {
   authToken: string;
 };
 
+export type ServerFile = File & { serverId: number };
+
 export interface PropertyFormInputs {
   main_image: File;
-  extra_media: File[];
+  extra_media: (File | ServerFile)[];
   description: string;
   benefits: string[];
   address: string;
