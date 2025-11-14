@@ -92,6 +92,6 @@ export const numeralToStringRepresentation = (
   const approximatedNumeral = Math.floor(numeral * 100) / 100;
 
   return `${String(approximatedNumeral)} ${
-    powerToStringRepresentationMap[powerOfAThousand]
+    powerToStringRepresentationMap[powerOfAThousand] || ""
   }${rentString}`;
 };
