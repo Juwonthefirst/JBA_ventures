@@ -10,7 +10,7 @@ interface Props {
 }
 
 const FileUploadSection = ({ control }: Props) => {
-  const MAX_FILE_SIZE = 1024 * 1024 * 2;
+  const MAX_FILE_SIZE = 1024 * 1024 * 50;
   const cleanMainImageOutput = (callback: (file: File) => void) => {
     return (files: File[]) => {
       callback(files[0]);

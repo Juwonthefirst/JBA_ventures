@@ -16,13 +16,13 @@ import {
   type FormDataValues,
   type FormDataObject,
   type Property,
-  type ServerFile,
+  //type ServerFile,
 } from "@/types.ts";
 import axios from "axios";
 import useMutatingForm from "@/hooks/use-mutating-form.ts";
 import { useQuery } from "@tanstack/react-query";
 import { propertyIdQueryOPtion } from "@/queryOptions.ts";
-import { urlToFile, isServerFile } from "@/utils.ts";
+import { urlToFile } from "@/utils.ts";
 
 const UpdatePropertyForm = () => {
   const { id } = useParams();
@@ -47,31 +47,32 @@ const UpdatePropertyForm = () => {
   ) => {
     const updatedFields: FormDataObject = {};
     updatedFields.extra_media_upload = [];
-    const fetchedExtraMedia = currentPropertyDataRef.current
-      .extra_media as ServerFile[];
-    const fetchedExtraMediaId = fetchedExtraMedia.map((file) => file.serverId);
-    // looks for updated fields by comparing them to their initial value
-    const extraMediaValues = inputValues.extra_media as File[] | undefined;
-    if (extraMediaValues) {
-      extraMediaValues.forEach((media) => {
-        if (isServerFile(media)) {
-          if (fetchedExtraMediaId.includes(media.serverId)) {
-            const arrayPosition = fetchedExtraMediaId.indexOf(media.serverId);
-            fetchedExtraMediaId.splice(arrayPosition, 1);
-          }
-          return;
-        }
-        updatedFields.extra_media_upload = [
-          ...(updatedFields.extra_media_upload as File[]),
-          media,
-        ];
-      });
+    //const fetchedExtraMedia = currentPropertyDataRef.current
+    //  .extra_media as ServerFile[];
+    //const fetchedExtraMediaId = fetchedExtraMedia.map((file) => file.serverId);
 
-      updatedFields.removed_media_id = fetchedExtraMediaId;
-    }
+    // looks for updated fields by comparing them to their initial value
+    // const extraMediaValues = inputValues.extra_media as File[] | undefined;
+    // if (extraMediaValues) {
+    //   extraMediaValues.forEach((media) => {
+    //     if (isServerFile(media)) {
+    //       if (fetchedExtraMediaId.includes(media.serverId)) {
+    //         const arrayPosition = fetchedExtraMediaId.indexOf(media.serverId);
+    //         fetchedExtraMediaId.splice(arrayPosition, 1);
+    //       }
+    //       return;
+    //     }
+    //     updatedFields.extra_media_upload = [
+    //       ...(updatedFields.extra_media_upload as File[]),
+    //       media,
+    //     ];
+    //   });
+
+    //   updatedFields.removed_media_id = fetchedExtraMediaId;
+    // }
 
     Object.entries(inputValues).forEach(([key, value]) => {
-      if (key === "extra_media") return;
+      //if (key === "extra_media") return;
       if (currentPropertyDataRef.current[key] !== value) {
         updatedFields[key] = key === "tags" ? JSON.stringify(value) : value;
       }
