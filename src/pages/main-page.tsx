@@ -69,7 +69,7 @@ const MainPage = () => {
                   key={property.id}
                   {...property}
                   ref={
-                    data.pageParams.length - 5 === index
+                    data.pageParams.length * 20 - 5 === index
                       ? intersectingElement
                       : undefined
                   }
