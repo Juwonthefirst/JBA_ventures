@@ -46,7 +46,7 @@ const useMutatingForm = ({ method, defaultValues, onSuccess, url }: Props) => {
           "Content-Type": "multipart/form-data",
         },
         formSerializer: { indexes: true },
-        timeout: 10000,
+        timeout: 30000,
       }).then((res) => res.data),
 
     onSuccess: (data, varaibles, onMutateResult, context) => {
