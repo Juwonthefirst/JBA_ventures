@@ -49,6 +49,8 @@ const MainAdminPage = () => {
     },
   });
   const intersectingElement = useRef<HTMLDivElement | null>(null);
+  const PAGE_SIZE = 20;
+  const LIMIT = 5;
 
   useEffect(() => {
     if (isFetchingNextPage || !hasNextPage || status === "pending") return;
@@ -82,13 +84,14 @@ const MainAdminPage = () => {
             <NoProperty />
           )}
           {status === "success" &&
-            data.pages.flatMap((response) =>
+            data.pages.flatMap((response, currentPageParamIndex) =>
               response.results.map((property, index) => (
                 <PropertyCard
                   key={property.id}
                   {...property}
                   ref={
-                    data.pageParams.length - 5 === index
+                    data.pageParams.length * PAGE_SIZE - LIMIT ===
+                    currentPageParamIndex * PAGE_SIZE + index
                       ? intersectingElement
                       : undefined
                   }

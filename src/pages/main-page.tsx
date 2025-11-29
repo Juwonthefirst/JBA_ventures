@@ -26,6 +26,8 @@ const MainPage = () => {
     refetch,
   } = useInfiniteQuery(propertyQueryOption(searchFilter));
   const intersectingElement = useRef<HTMLElement | null>(null);
+  const PAGE_SIZE = 20;
+  const LIMIT = 5;
 
   useEffect(() => {
     if (isFetchingNextPage || !hasNextPage || status === "pending") return;
@@ -63,13 +65,14 @@ const MainPage = () => {
             <NoProperty className="sm:col-span-2 lg:col-span-3" />
           )}
           {status === "success" &&
-            data.pages.flatMap((response) =>
+            data.pages.flatMap((response, currentPageParamIndex) =>
               response.results.map((property, index) => (
                 <PropertyCard
                   key={property.id}
                   {...property}
                   ref={
-                    data.pageParams.length * 20 - 5 === index
+                    data.pageParams.length * PAGE_SIZE - LIMIT ===
+                    currentPageParamIndex * PAGE_SIZE + index
                       ? intersectingElement
                       : undefined
                   }
