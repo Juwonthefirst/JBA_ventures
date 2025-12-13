@@ -92,6 +92,7 @@ const SearchBox = ({ className, searchFilter, setSearchFilter }: Props) => {
             className="bg-black text-white dark:bg-white dark:text-black w-full rounded-md px-2 py-1 text-sm hover:bg-transparent hover:outline dark:hover:outline-white hover:text-black dark:hover:text-white"
             onClick={() => {
               setSearchFilter({});
+              setInputValue("");
             }}
           >
             Clear
